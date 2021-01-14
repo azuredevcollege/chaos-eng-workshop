@@ -1,0 +1,8 @@
+**/obj/**
+**/bin/**
+**/.terraform/**
+.vuepress/dist/
+**/packages-microsoft-prod.deb
+**/*Zone.Identifier
+**/terraform.tfstate
+**/terraform.tfstate.backup
