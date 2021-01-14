@@ -1,0 +1,26 @@
+name: Build and Publish Images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  buildAndPush:
+    name: Build and Push docker images to HitHub packages
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./apps
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+      - name: Build and Push SCM Contacts API
+        uses: docker/build-push-action@v2
+        with:
+          context: ./apps/dotnetcore/Scm
+          file: ./apps/dotnetcore/Scm/Adc.Scm.Api/Dockerfile
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: azuredevcollege/chaos-eng-workshop/adc-contacts-api
+          push: true
+          tags: 2.0
+        
