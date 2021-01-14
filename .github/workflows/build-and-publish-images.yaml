@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
-        
+
       - name: Login to GitHub Packages Docker registry
         uses: docker/login-action@v1
         with: 
@@ -26,5 +26,5 @@ jobs:
           context: ./apps/dotnetcore/Scm
           file: ./apps/dotnetcore/Scm/Adc.Scm.Api/Dockerfile
           push: true
-          tags: chaos-eng-workshop/adc-contacts-api:2.0
+          tags: azuredevcollege/chaos-eng-workshop/adc-contacts-api:2.0
         
