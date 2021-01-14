@@ -27,6 +27,7 @@ jobs:
           file: ./apps/dotnetcore/Scm/Adc.Scm.Api/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/adc-contacts-api:2.0
+
       - name: Build and Push SCM Frontend UI
         uses: docker/build-push-action@v2
         with:
@@ -34,4 +35,52 @@ jobs:
           file: ./apps/frontend/scmfe/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/adc-frontend-ui:2.0
+
+      - name: Build and Push SCM Resource API
+        uses: docker/build-push-action@v2
+        with:
+          context: ./apps/dotnetcore/Scm.Resources/Adc.Scm.Resources.Api
+          file: ./apps/dotnetcore/Scm.Resources/Adc.Scm.Resources.Api/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/adc-resources-api:2.0
+
+      - name: Build and Push SCM ImageResizer Func
+        uses: docker/build-push-action@v2
+        with:
+          context: ./apps/dotnetcore/Scm.Resources/Adc.Scm.Resources.ImageResizer
+          file: ./apps/dotnetcore/Scm.Resources/Adc.Scm.Resources.ImageResizer/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/adc-resources-func:2.0
+
+      - name: Build and Push SCM Search API
+        uses: docker/build-push-action@v2
+        with:
+          context: ./apps/dotnetcore/Scm.Search/Adc.Scm.Search.Api
+          file: ./apps/dotnetcore/Scm.Resources/Adc.Scm.Search.Api/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/adc-search-api:2.0
+
+      - name: Build and Push SCM Search Indexer Func
+        uses: docker/build-push-action@v2
+        with:
+          context: ./apps/dotnetcore/Scm.Search/Adc.Scm.Search.Indexer
+          file: ./apps/dotnetcore/Scm.Resources/Adc.Scm.Search.Indexer/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/adc-search-func:2.0
+
+      - name: Build and Push SCM VisitReports API
+        uses: docker/build-push-action@v2
+        with:
+          context: ./apps/nodejs/visitreport
+          file: ./apps/nodejs/visitreport/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/adc-visitreports-api:2.0
+
+      - name: Build and Push SCM TextAnalytics Func
+        uses: docker/build-push-action@v2
+        with:
+          context: ./apps/nodejs/textanalytics
+          file: ./apps/nodejs/textanalytics/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/adc-textanalytics-func:2.0
         
