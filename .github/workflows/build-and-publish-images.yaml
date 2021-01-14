@@ -16,9 +16,9 @@ jobs:
       - name: Login to GitHub Packages Docker registry
         uses: docker/login-action@v1
         with: 
-          registry: docker.pkg.github.com
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_TOKEN }}
 
       - name: Build and Push SCM Contacts API
         uses: docker/build-push-action@v2
@@ -26,5 +26,5 @@ jobs:
           context: ./apps/dotnetcore/Scm
           file: ./apps/dotnetcore/Scm/Adc.Scm.Api/Dockerfile
           push: true
-          tags: azuredevcollege/chaos-eng-workshop/adc-contacts-api:2.0
+          tags: ${{ github.repository_owner }}/adc-contacts-api:2.0
         
