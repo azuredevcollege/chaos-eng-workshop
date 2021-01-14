@@ -56,7 +56,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./apps/dotnetcore/Scm.Search/Adc.Scm.Search.Api
-          file: ./apps/dotnetcore/Scm.Resources/Adc.Scm.Search.Api/Dockerfile
+          file: ./apps/dotnetcore/Scm.Search/Adc.Scm.Search.Api/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/adc-search-api:2.0
 
@@ -64,7 +64,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./apps/dotnetcore/Scm.Search/Adc.Scm.Search.Indexer
-          file: ./apps/dotnetcore/Scm.Resources/Adc.Scm.Search.Indexer/Dockerfile
+          file: ./apps/dotnetcore/Scm.Search/Adc.Scm.Search.Indexer/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/adc-search-func:2.0
 
