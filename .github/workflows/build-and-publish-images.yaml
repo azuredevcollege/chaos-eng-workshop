@@ -13,7 +13,7 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v2
 
-      - name: Login to GitHub Packages Docker registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with: 
           registry: ghcr.io
@@ -27,4 +27,11 @@ jobs:
           file: ./apps/dotnetcore/Scm/Adc.Scm.Api/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/adc-contacts-api:2.0
+      - name: Build and Push SCM Frontend UI
+        uses: docker/build-push-action@v2
+        with:
+          context: ./apps/frontend/scmfe
+          file: ./apps/frontend/scmfe/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/adc-frontend-ui:2.0
         
