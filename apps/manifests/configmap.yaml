@@ -1,0 +1,15 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: uisettings
+  namespace: contactsapp
+data:
+  settings.js: |-
+    var uisettings = {
+      endpoint: 'http://#{HOSTNAME}#/api/contacts/',
+      resourcesEndpoint: 'http://#{HOSTNAME}#/api/resources/',
+      searchEndpoint: 'http://#{HOSTNAME}#/api/search/',
+      reportsEndpoint: 'http://#{HOSTNAME}#/api/visitreports/',
+      enableStats: true,
+      aiKey: '#{appinsights}#',
+    }
