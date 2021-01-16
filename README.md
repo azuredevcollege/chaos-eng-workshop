@@ -24,7 +24,7 @@ Switch to directory _terraform_ and run following commands:
 
 ```Shell
 $ terraform init 
-$ terraform apply -var="prefix=<yourprefix>" -var="location=westeurope"
+$ terraform apply -var="prefix=<yourprefix>" -var="location=westeurope" -var="aks_resource_group_name=<ResourceGroupName>" -var="akscluster=<ClusterName>"
 # Answer with 'yes' when asked, that the changes will be applied.
 ```
 
