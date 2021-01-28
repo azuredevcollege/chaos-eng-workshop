@@ -108,9 +108,9 @@ module "kubernetes" {
 }
 
 output "nip_hostname" {
-    value = "${module.kubernetes.nip_hostname}"
+    value = module.kubernetes.nip_hostname
 }
 
 output "ai_ik" {
-    value = "${module.common.ai_instrumentation_key}"
+    value = module.common.ai_instrumentation_key
 }
