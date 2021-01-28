@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Adc.Scm.Resources.Api
 {
@@ -27,6 +29,16 @@ namespace Adc.Scm.Resources.Api
             // Initialize ApplicationInsights
             services.AddSingleton<ITelemetryInitializer, ApiTelemetryInitializer>();
             services.AddApplicationInsightsTelemetry();
+
+            services.AddHostedService<StartupHostedService>();
+            services.AddSingleton<StartupHostedServiceHealthCheck>();
+
+            services.AddHealthChecks()
+                .AddCheck<StartupHostedServiceHealthCheck>(
+                    "hosted_service_startup",
+                    failureStatus: HealthStatus.Degraded,
+                    tags: new[] { "ready" });
+
 
             services.AddControllers(options =>
             {
@@ -75,6 +87,8 @@ namespace Adc.Scm.Resources.Api
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
+                endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = (check) => check.Tags.Contains("ready") });
                 endpoints.MapControllers();
             });
         }

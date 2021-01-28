@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 
 namespace Adc.Scm.Api
@@ -38,8 +40,16 @@ namespace Adc.Scm.Api
             services.AddSingleton<ITelemetryInitializer, ApiTelemetryInitializer>();
             services.AddApplicationInsightsTelemetry();
 
+            services.AddHostedService<StartupHostedService>();
+            services.AddSingleton<StartupHostedServiceHealthCheck>();
 
-            services.AddControllers();            
+            services.AddHealthChecks()
+                .AddCheck<StartupHostedServiceHealthCheck>(
+                    "hosted_service_startup",
+                    failureStatus: HealthStatus.Degraded,
+                    tags: new[] { "ready" });
+
+            services.AddControllers();
 
             if (HostingEnvironment.IsDevelopment())
             {
@@ -73,12 +83,12 @@ namespace Adc.Scm.Api
                 }
                 // Use CosmosDb if no ConnectionString is specified
                 else
-                {                    
+                {
                     services.Configure<Repository.CosmosDb.RepositoryOptions>(options => Configuration.Bind("CosmosOptions", options));
                     services.AddScoped<IContactRepository, Repository.CosmosDb.ContactRepository>();
                 }
             }
-                        
+
             services.AddScoped<MapperService>();
             services.AddScoped<ClaimsProviderService>();
             services.Configure<EventServiceOptions>(options => Configuration.Bind("EventServiceOptions", options));
@@ -121,6 +131,8 @@ namespace Adc.Scm.Api
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
+                endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = (check) => check.Tags.Contains("ready") });
                 endpoints.MapControllers();
             });
         }
