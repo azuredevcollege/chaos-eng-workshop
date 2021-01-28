@@ -21,12 +21,38 @@ const {
     statsTimelineHandler
 } = require('../handler/reports');
 
+const startupDelay = process.env.READINESSDELAYSECONDS || 15;
+var ready = false;
+setTimeout(()=> ready = true, startupDelay * 1000);
+
 module.exports = async function (fastify, opts) {
     fastify.route({
         method: 'GET',
         url: '/',
         handler: async function(request, reply) {
             reply.code(200).send();
+        }
+    });
+    
+    // Liveness probe
+    fastify.route({
+        method: 'GET',
+        url: '/health/live',
+        handler: async function(request, reply) {
+            reply.code(200).send();
+        }
+    });
+
+    // Readiness probe
+    fastify.route({
+        method: 'GET',
+        url: '/health/ready',
+        handler: async function(request, reply) {
+            if(ready) {
+                reply.code(200).send("Healthy");
+            } else {
+                reply.code(503).send();
+            }
         }
     });
 
