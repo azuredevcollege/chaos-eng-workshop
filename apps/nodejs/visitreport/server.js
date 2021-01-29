@@ -33,7 +33,7 @@ fastify.register(require('fastify-swagger'), {
     exposeRoute: true
 });
 fastify.addHook('onRequest', async (request, reply) => {
-    if (process.env.APPINSIGHTS_KEY != '') {
+    if (process.env.APPINSIGHTS_KEY != '' && process.env.APPINSIGHTS_KEY != undefined) {
         appInsights.defaultClient.trackNodeHttpRequest({ request: request.req, response: reply.res });
     }
     return;

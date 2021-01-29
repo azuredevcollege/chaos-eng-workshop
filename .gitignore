@@ -6,3 +6,4 @@
 **/*Zone.Identifier
 **/terraform.tfstate
 **/terraform.tfstate.backup
+**/node_modules/**
