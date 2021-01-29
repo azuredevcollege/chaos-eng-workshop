@@ -28,3 +28,9 @@ $ terraform apply -var="prefix=<yourprefix>" -var="location=westeurope" -var="ak
 # Answer with 'yes' when asked, that the changes will be applied.
 ```
 
+## Readiness / Liveness Probes
+
+Each service comes with a `/health/live` and `/health/ready` endpoint. The liveness endpoint returns `200` as soon as the corresponding service is up and running. The readiness endpoint returns a `503` by default for 15 sec, after that timespan `200`. That delay value can be adjusted by an environment variable:
+
+- Contacts / Resources / Search API: `ReadinessDelaySeconds` (e.g. `5`)
+- VisitReports API: `READINESSDELAYSECONDS`
