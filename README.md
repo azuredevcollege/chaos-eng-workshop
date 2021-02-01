@@ -9,7 +9,7 @@ $ az group create -n <ResourceGroupName> -l westeurope
 ## Create Cluster
 
 ```Shell
-$ az aks create -g <ResourceGroupName> -n <ClusterName> --node-count 3 --enable-managed-identity --node-vm-size standard_b2s --generate-ssh-keys
+$ az aks create -g <ResourceGroupName> -n <ClusterName> --node-count 3 --enable-managed-identity --node-vm-size standard_b2s --generate-ssh-keys --zones 1 2 3
 ```
 
 ## Get-Credentials
