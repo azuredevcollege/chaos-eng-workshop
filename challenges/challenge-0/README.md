@@ -20,15 +20,117 @@ The application also consists of a frontend that has been written in VueJS. To g
 
 ## Setup the Azure Cloud Shell
 
-...
+To have a common environment for this workshop, we will be using the `Azure Cloud Shell` in a browser. The cloud shell gives you an interactive bash shell, where most of the requirements for this workshop are in place - like the `Azure CLI`, `terraform`, `kubectl` etc.
+
+To setup your environment, go to <https://shell.azure.com> an follow the wizard. Make sure to select `bash`.
+
+In case you are working in an existing Azure environment - especially when you have access to multiple subscriptions - please check that you are working with the correct Azure subscription.
+
+```shell
+$ az account show
+{
+  "cloudName": "AzureCloud",
+  "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "isDefault": false,
+  "name": "Your Subscription Name",
+  "state": "Enabled",
+  "tenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "user": {
+    "name": "xxx@example.com",
+    "type": "user"
+  }
+}
+```
+
+If that is not the correct one, follow the steps below:
+
+```shell
+$ az account list -o table
+[the list of available subscriptions is printed]
+
+$ az account set -s <SUBSCRIPTIONID_YOU_WANT_TO_USE>
+```
 
 ## Create the Kubernetes Cluster
 
-...
+In this section we will create a Kubernetes cluster using the Azure CLI and configure your local access credentials to control your cluster via `kubectl`.
+
+First and foremost, let's create a resource group where we will install the cluster to:
+
+```shell
+$ az group create -n <ResourceGroupName> -l westeurope
+```
+
+Next, create the cluster (this will take approximately 5-10min.):
+
+```shell
+$ az aks create -g <ResourceGroupName> -n <ClusterName> --node-count 3 --enable-managed-identity --node-vm-size standard_b2s --generate-ssh-keys --zones 1 2 3
+```
+
+The command above will create a Kubernetes cluster in the "West Europe" region and will place our three worker nodes in three different availability zones.
+
+When the cluster has been created, download the access credentials:
+
+```shell
+$ az aks get-credentials -g <ResourceGroupName> -n <ClusterName>
+```
+
+When you are all set, let's query the nodes we have in our cluster (the version may differ in your case):
+
+```shell
+$ kubectl get nodes
+NAME                                STATUS   ROLES   AGE   VERSION
+aks-nodepool1-41662097-vmss000000   Ready    agent   8h    v1.18.14
+aks-nodepool1-41662097-vmss000001   Ready    agent   8h    v1.18.14
+aks-nodepool1-41662097-vmss000002   Ready    agent   8h    v1.18.14
+```
 
 ## Create the infrastructure and deploy the application
 
-...
+Now that we have a Kubernetes cluster up and running, let's deploy the application with all its dependencies (like Azure Service Bus, CosmosDB, Azure Search etc.). To avoid a manual setup of all those components, we created a Terraform script that does all the "heavy lifting" for you.
+
+Therefor, we need to clone this repo into the Azure Cloud Shell. Let's do this:
+
+```shell
+$ git clone https://github.com/azuredevcollege/chaos-eng-workshop.git
+
+Cloning into 'chaos-eng-workshop'...
+remote: Enumerating objects: 409, done.
+remote: Counting objects: 100% (409/409), done.
+remote: Compressing objects: 100% (276/276), done.
+remote: Total 409 (delta 117), reused 391 (delta 101), pack-reused 0
+Receiving objects: 100% (409/409), 2.12 MiB | 4.56 MiB/s, done.
+Resolving deltas: 100% (117/117), done.
+```
+
+> Info: In this repository, you will find all assets of this workshop, even the application itself.
+
+Now switch to the `terraform` directory and initialize `terraform`:
+
+```shell
+$ cd chaos-eng-workshop/terraform
+$ terraform init
+
+Initializing modules...
+- common in common
+- data in data
+- kubernetes in kubernetes
+- messaging in messaging
+- storage in storage
+
+Initializing the backend...
+[...]
+[...]
+[...]
+Terraform has been successfully initialized!
+```
+
+Finally, apply the script:
+
+```shell
+$ terraform apply -var="prefix=<yourprefix>" -var="location=westeurope" -var="aks_resource_group_name=<ResourceGroupName>" -var="akscluster=<ClusterName>"
+```
+
 
 ## Smoke Test
 
