@@ -131,10 +131,25 @@ Finally, apply the script:
 $ terraform apply -var="prefix=<yourprefix>" -var="location=westeurope" -var="aks_resource_group_name=<ResourceGroupName>" -var="akscluster=<ClusterName>"
 ```
 
+After the script has finished (appr. after another 10-15 min.), you will see something like this:
+
+```shell
+[...]
+[...]
+[...]
+Apply complete! Resources: 54 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+ai_ik = "2f45db5e-8b53-47d7-8aeb-3884082ca961"
+nip_hostname = "104-45-73-97.nip.io"
+```
 
 ## Smoke Test
 
-...
+You can now copy&past the value of the variable `nip_hostname` and open the URL in a browser, in this case <http://104-45-73-97.nip.io>. You should now see the SCM Contacts Management application.
+
+![home](./img/app_home.png)
 
 ## Monitoring
 
