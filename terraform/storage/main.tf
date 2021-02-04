@@ -13,7 +13,7 @@ resource "azurerm_storage_account" "resources" {
 
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
@@ -26,7 +26,7 @@ resource "azurerm_storage_account" "functions" {
 
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
