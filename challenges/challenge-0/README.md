@@ -64,7 +64,14 @@ $ az group create -n <ResourceGroupName> -l westeurope
 Next, create the cluster (this will take approximately 5-10min.):
 
 ```shell
-$ az aks create -g <ResourceGroupName> -n <ClusterName> --node-count 3 --enable-managed-identity --node-vm-size standard_b2s --generate-ssh-keys --zones 1 2 3
+$ az aks create \
+   --resource-group <ResourceGroupName> \
+   --name <ClusterName> \
+   --node-count 3 \
+   --enable-managed-identity \
+   --node-vm-size standard_b2s \
+   --generate-ssh-keys \
+   --zones 1 2 3
 ```
 
 The command above will create a Kubernetes cluster in the "West Europe" region and will place our three worker nodes in three different [availability zones](https://docs.microsoft.com/en-us/azure/availability-zones/az-overview).
