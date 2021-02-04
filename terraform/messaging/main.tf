@@ -12,7 +12,7 @@ resource "azurerm_servicebus_namespace" "sbn" {
 
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 

@@ -15,7 +15,7 @@ resource "azurerm_application_insights" "appinsights" {
   retention_in_days   = 90
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 

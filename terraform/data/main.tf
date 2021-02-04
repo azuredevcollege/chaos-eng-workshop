@@ -24,7 +24,7 @@ resource "azurerm_cosmosdb_account" "cda" {
 
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
@@ -55,7 +55,7 @@ resource "azurerm_sql_server" "sqlsrv" {
 
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
@@ -68,7 +68,7 @@ resource "azurerm_sql_database" "sqldb" {
   edition                          = "Standard"
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
@@ -90,7 +90,7 @@ resource "azurerm_search_service" "search" {
 
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
@@ -106,7 +106,7 @@ resource "azurerm_cognitive_account" "textanalytics" {
 
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
