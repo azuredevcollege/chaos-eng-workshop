@@ -153,4 +153,29 @@ You can now copy&past the value of the variable `nip_hostname` and open the URL 
 
 ## Monitoring
 
-...
+When running the terraform script, we also created a service that is helping us with monitoring our application running in the Kubernetes cluster: Application Insights! Each service (API, background service, frontend) is talking to Application Insights (via an instrumentation key) and sending telemetry data like request/response times, errors that may have occured, how our users navigate through the frontend etc.
+
+Navigate to the Application Insights component in the portal (in the "common resource group") and check the data that is sent to that service (of course, you need to use tha application for a while, before data arrives in the monitoring service):
+
+### Application Map
+
+The application map gives you an overview of our components and how they communicate:
+
+![map](./img/monitoring_map.png)
+![map](./img/monitoring_error.png)
+
+### Application Performance
+
+The performance view, shows you how the app behaves in terms of request/response performance.
+
+![map](./img/monitoring_performance.png)
+
+### Application User Events / Frontend Integration
+
+Even the frontend sends telemetry data. You can see how a user navigates through the application.
+
+![map](./img/monitoring_userevents.png)
+
+### Application End2End Transactions
+
+![map](./img/monitoring_end2end.png)
