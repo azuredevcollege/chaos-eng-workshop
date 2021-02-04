@@ -135,7 +135,11 @@ Terraform has been successfully initialized!
 Finally, apply the script:
 
 ```shell
-$ terraform apply -var="prefix=<yourprefix>" -var="location=westeurope" -var="aks_resource_group_name=<ResourceGroupName>" -var="akscluster=<ClusterName>"
+$ terraform apply \
+  -var="prefix=<yourprefix>" \
+  -var="location=westeurope" \
+  -var="aks_resource_group_name=<ResourceGroupName>" \
+  -var="akscluster=<ClusterName>"
 ```
 
 After the script has finished (appr. after another 10-15 min.), you will see something like this:
