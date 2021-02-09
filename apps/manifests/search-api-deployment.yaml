@@ -35,7 +35,7 @@ spec:
             limits:
               memory: '256Mi'
               cpu: '500m'
-          image: ghcr.io/azuredevcollege/adc-search-api:2.0
+          image: ghcr.io/azuredevcollege/adc-search-api:3.0
           env:
             - name: ContactSearchOptions__ServiceName
               valueFrom:
