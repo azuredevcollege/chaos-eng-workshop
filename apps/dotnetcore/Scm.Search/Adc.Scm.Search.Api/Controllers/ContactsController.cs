@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Adc.Scm.Search.Api.Controllers
 {
     [ApiController]
-    [Route("contacts")]    
+    [Route("/api/search/contacts")]    
     [Produces("application/json")]
     public class ContactsController : ControllerBase
     {
