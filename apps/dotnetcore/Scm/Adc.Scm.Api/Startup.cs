@@ -119,7 +119,7 @@ namespace Adc.Scm.Api
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Contacts API v1");
+                c.SwaggerEndpoint("/swagger/contacts/swagger/v1/swagger.json", "Contacts API v1");
                 c.RoutePrefix = string.Empty;
             });
 

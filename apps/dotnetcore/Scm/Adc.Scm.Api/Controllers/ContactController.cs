@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Adc.Scm.Api.Controllers
 {
     [ApiController]
-    [Route("contacts")]
+    [Route("/api/contacts")]
     [Produces("application/json")]
     public class ContactController : ControllerBase
     {
