@@ -1,6 +1,6 @@
 **/obj/**
 **/bin/**
-**/.terraform/**
+**/.terraform/
 .vuepress/dist/
 **/packages-microsoft-prod.deb
 **/*Zone.Identifier
