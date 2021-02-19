@@ -26,7 +26,7 @@ jobs:
           context: ./apps/dotnetcore/Scm
           file: ./apps/dotnetcore/Scm/Adc.Scm.Api/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/adc-contacts-api:2.0
+          tags: ghcr.io/${{ github.repository_owner }}/adc-contacts-api:3.0
 
       - name: Build and Push SCM Frontend UI
         uses: docker/build-push-action@v2
@@ -58,7 +58,7 @@ jobs:
           context: ./apps/dotnetcore/Scm.Search/Adc.Scm.Search.Api
           file: ./apps/dotnetcore/Scm.Search/Adc.Scm.Search.Api/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/adc-search-api:2.0
+          tags: ghcr.io/${{ github.repository_owner }}/adc-search-api:3.0
 
       - name: Build and Push SCM Search Indexer Func
         uses: docker/build-push-action@v2

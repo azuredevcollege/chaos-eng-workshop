@@ -250,6 +250,11 @@ resource "kubectl_manifest" "textanalytics_func_deployment" {
   depends_on = [kubectl_manifest.scm_secrets]
 }
 
+resource "kubectl_manifest" "swagger_ingress" {
+  yaml_body  = replace(file("abspath(path.module)/../../apps/manifests/swagger-ingress.yaml"), "#{HOSTNAME}#", local.hostname)
+  depends_on = [kubectl_manifest.scm_secrets]
+}
+
 output "nip_hostname" {
   value = local.hostname
 }

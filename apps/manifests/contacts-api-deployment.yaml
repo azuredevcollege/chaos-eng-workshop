@@ -7,7 +7,7 @@ metadata:
     application: scmcontacts
     service: contactsapi
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -35,7 +35,7 @@ spec:
             limits:
               memory: '256Mi'
               cpu: '500m'
-          image: ghcr.io/azuredevcollege/adc-contacts-api:2.0
+          image: ghcr.io/azuredevcollege/adc-contacts-api:3.0
           env:
             - name: ConnectionStrings__DefaultConnectionString
               valueFrom:

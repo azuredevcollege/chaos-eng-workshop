@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "common" {
   location = var.location
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
@@ -21,7 +21,7 @@ resource "azurerm_resource_group" "data" {
   location = var.location
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
@@ -30,7 +30,7 @@ resource "azurerm_resource_group" "storage" {
   location = var.location
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
@@ -39,7 +39,7 @@ resource "azurerm_resource_group" "messaging" {
   location = var.location
   tags = {
     environment = var.env
-    source      = "AzureDevCollege"
+    source      = "chaos-eng-workshop"
   }
 }
 
