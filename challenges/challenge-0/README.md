@@ -192,3 +192,15 @@ Even the frontend sends telemetry data. You can see how a user navigates through
 In this view, you can see cross-component transactions, e.g. the Contacts service querying data in the Azure SQL DB or sending data via Azure Service Bus to a background worker / function.
 
 ![map](./img/monitoring_end2end.png)
+
+## Kubernetes Insights
+
+If you are not familiar with the `kubectl` command line tool and like a more UI-oriented approach to investigate things, then you might find the Azure Portal useful to gain some insights for your cluster.
+
+Navigate to the cluster you jsut created in the portal and have a look at the context menu at the left side. Under `Kubernetes resources` you find entries for `Namespaces`, `Workloads`, `Services and ingress` etc. Click through each of the menu items and have a look at the information the views provide, espacially the `Workloads` view is interesting, as it shows Kubernetes deployments, pods, replicasets etc.
+
+![kubernetes deployments](./img/portal_workloads.png)
+
+![kubernetes pods](./img/portal_pods.png)
+
+![kubernetes services](./img/portal_services.png)
