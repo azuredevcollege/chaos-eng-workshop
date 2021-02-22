@@ -83,7 +83,7 @@ Alternative: We slow down the network between Search Service and Azure Search In
 * We should set the connectivity conficuration very agressivly (very low timeouts, not retries)
 * Fix the problem: Configure the Service Bus Client less aggressively and with retries.
 
-# Challenge #5: 
+# Challenge #5 (optional): 
 
 Goals:
 
