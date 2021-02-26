@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
+using System.Data.SqlClient;
 
 namespace Adc.Scm.Api
 {
@@ -78,7 +79,33 @@ namespace Adc.Scm.Api
                 if (!string.IsNullOrEmpty(connStr))
                 {
                     services.AddEntityFrameworkSqlServer();
-                    services.AddDbContext<ContactDbContext>(options => options.UseSqlServer(connStr));
+
+                    services.AddDbContext<ContactDbContext>(options => 
+                    {
+                        var connectionTimeout = Configuration.GetValue<Nullable<int>>("SqlConnectionTimeoutSec");
+                        var connectionRetryCount = Configuration.GetValue<Nullable<int>>("SqlConnectionRetryCount");
+                        var commandTimeout = Configuration.GetValue<Nullable<int>>("SqlCommandTimeoutSec");
+
+                        var sqlConnectionBuilder = new SqlConnectionStringBuilder(connStr);
+
+                        if (null != connectionTimeout)
+                        {
+                            sqlConnectionBuilder.ConnectTimeout = connectionTimeout.Value;
+                        }
+
+                        if (null != connectionRetryCount) 
+                        {
+                            sqlConnectionBuilder.ConnectRetryCount = connectionRetryCount.Value;
+                        }
+
+                        options.UseSqlServer(sqlConnectionBuilder.ConnectionString, sqlSrvOpts => 
+                        {
+                            if (null != commandTimeout)
+                            {
+                                sqlSrvOpts.CommandTimeout(commandTimeout.Value);
+                            }
+                        });
+                    });
                     services.AddScoped<IContactRepository, ContactRepository>();
                 }
                 // Use CosmosDb if no ConnectionString is specified
