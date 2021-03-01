@@ -6,7 +6,7 @@
  * Introduction of the agenda and the workshop rules (split participants into groups, info about technical video call setup)
  * Introduction of the demo application and the technical basics for the workshop
 
-# Challenge #1: Install AKS platform & application
+# Challenge #0: Install AKS platform & application
 
 In this challenge we create the basic setup for our chaos engineering experiments.
 
@@ -17,7 +17,7 @@ Goals:
 * Learn how to setup our demo application with Terraform
 * Learn how to us ApplicationInsights and Distributed Tracing
 
-# Challenge #2: Chaos Engineering "hello world"
+# Challenge #1: Chaos Engineering "hello world"
 
 In this challenge we want to learn the basics of chaos engineering with two simple examples. We start in gameday mode and automate the experiments with the ChaosToolkit.
 
@@ -46,7 +46,7 @@ Goals:
 * Repeat the experiment. Does the total failure still occur?
 * Write down the experiment in a Chaos Toolkit script and test the script in your Azure Cloud Shell. _Open issue: How can we validate the persistent data after pod restart?_
 
-# Challenge #3: Spread your application over the whole cluster
+# Challenge #2: Spread your application over the whole cluster
 
 Goals:
 
@@ -59,7 +59,7 @@ Goals:
 * If the two instances are running on different nodes, the Kubernetes scheduler has worked well and distributed your app well.
 * If they are running on one node, a failure of that node will again lead to a temporary total application failure. 
 
-# Challenge #4: Stability also in case of network troubles
+# Challenge #3: Stability also in case of network troubles
 
 Goals:
 
@@ -83,7 +83,7 @@ Alternative: We slow down the network between Search Service and Azure Search In
 * We should set the connectivity conficuration very agressivly (very low timeouts, not retries)
 * Fix the problem: Configure the Service Bus Client less aggressively and with retries.
 
-# Challenge #5 (optional): 
+# Challenge #4 (optional): 
 
 Goals:
 
