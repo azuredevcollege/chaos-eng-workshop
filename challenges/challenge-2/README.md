@@ -34,13 +34,13 @@ pip install azure.mgmt.compute==7.0.0
 ```
 
 ## Pod distribution over nodes
-In the previous challenge, we increased the replica amount of each deployment to at least 2. This makes all applications highly available and protects us from sudden pod failures. If one pod fails, there will always be a at least one more to answer requests.
+In the previous challenge, we increased the replica amount of the frontend deployment to 2 replicas. This makes our frontend highly available and protects us from sudden pod failures. If one pod fails, there will always be a at least one more to answer requests.
 
-But what about node failures? If both pods of an application are on the same node and that node fails, we have a problem. While Kubernetes will quickly spin up new pods when a node is suddenly removed, the application startup will be our downtime. 
+But what about node failures? If all pods of multiple applications or all pods of an application are on the same node and that node fails, we have a outage of our applications. While Kubernetes will quickly spin up new pods when a node is suddenly removed, the application startup will determine our downtime. 
 
-It is important to know how the pods are distributed over the cluster. Check for the frontend service on which nodes the pod instances are running.  
+It is important to know how the pods are distributed over the cluster. Check for all services on which nodes the pod instances are running.  
 
-You can do this either by checking the Kubernetes dashboard inside the Azure Portal or by using kubectl. Kubectl is the preferred way:
+You can do this either by checking the Kubernetes dashboard inside the Azure Portal or by using kubectl. Let's try this out with kubectl:
 
 You can run `kubectl get nodes` to see how many nodes are currently running in the cluster.
 For example:
@@ -72,9 +72,49 @@ In this case both replicas are running on two different nodes.
 
 
 ## Experiment with node failures
-_Use stop node experiment from talk as base. Do not select a specific node, but choose a random one from VMSS_   
+We will now try out what happens with our application when we stop one of the nodes of our cluster. 
+
+### Stop one node manually
+Let's first do this manually.
+
+First select the resource group of your AKS cluster. You can find it by selecting *Resource groups* in the Azure Portal.
+_TODO: add Images from Azure Portal_
+Select the resource groups with the name `MC_<resource-group of your cluster>_<cluster_name>_<location>`. This contains the underlying Azure resources of your AKS cluster.
+
+Now, select the Virtual machine scale set of your cluster. There should be only one in this resource group.
+
+Select *Instances* in the left sidebar to view all instances of the scale set. 
+
+Finally, you can select one of the instances to stop. 
+When you stopped one, monitor your application health status and the node status.
+
+You can check the nodes of your cluster by using the kubectl command from before `kubectl get nodes`
+For example:
+```bash
+$ kubectl get nodes
+NAME                                STATUS   ROLES   AGE   VERSION
+aks-nodepool1-36421985-vmss000000   Ready    agent   27d   v1.18.14
+aks-nodepool1-36421985-vmss000009   Ready    agent   16d   v1.18.14
+aks-nodepool1-36421985-vmss00000a   Ready    agent   16d   v1.18.14
+```
+Tip: add a `watch` in front of the command to see live updates of your nodes. 
+
+At some point one of the nodes is *NotReady*. How long does it take, until Kubernetes registers this? How does this influence our monitoring or testing of the Kubernetes health state?
+
+Check if your application still works normally. You can also view if enough pods are still alive using `kubectl get pods` in the namespace of the application. If your application is down - how long does it take to recover? 
+
+Take these learnings into account, when creating a chaos experiment in the next part of the challenge.
+### Create a chaos experiment using chaostoolkit
+
+To retrieve the necessary names for the chaos experiment, execute the following commands:
+```bash
+NODE_RESGROUP=$(az aks show -n <CLUSTER_NAME> -g <CLUSTER_RES_GROUP> --query "nodeResourceGroup" -o tsv)
+VMSS_NAME=$(az vmss list -g $NODE_RESGROUP --query [0].name -o tsv)
+VMSS_INSTANCE0=$(az vmss list-instances -n $VMSS_NAME -g $NODE_RESGROUP --query [0].name -o tsv)
+```
+
 _Open Issue: Previous challenge solution was multi-replicas for frontend service. This means most likely the frontend service is distributed on two nodes. If we keep the replicas of other services to one, the story could be inter pod anti affinity: Even though frontend service is running HA, other services still run on the same node that goes down with only one replica. Can we test the application in a way to check if frontend works with backend correctly?_
 
 ## Spread pods over multiple nodes
-_Create Inter Pod AntiAffinity with frontend and other applications that heavy dependencies on each other. Should not be co-located on the same node._ 
 _Increase replicas for all applications_ 
+_Create Inter Pod AntiAffinity with frontend and other applications that have heavy dependencies on each other. Should not be co-located on the same node._ 
