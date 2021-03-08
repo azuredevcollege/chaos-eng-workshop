@@ -1,0 +1,41 @@
+---
+version: 1.0.0
+title: Validate search service outage
+description: Kills search service and validates search api availability
+
+# define azure properties
+configuration:
+  app:
+    type: "env"
+    key: "APP"
+  azure_app_endpoint: 20-73-198-159.nip.io
+
+# define the steady state hypothesis
+steady-state-hypothesis:
+  title: Verifying search api remains healthy
+  probes:
+  - type: probe
+    name: search-api-must-still-respond
+    tolerance: 200 # http response code 200 is expected
+    provider:
+      type: http
+      timeout: 2
+      url: http://${app}/api/search/contacts?phrase=mustermann
+
+# define the experiment
+method:
+- type: action
+  name: terminate-pod
+  provider:
+    type: python
+    module: chaosk8s.pod.actions
+    func: terminate_pods
+    # Terminates one "searchapi" pod randomly
+    arguments:
+      label_selector: service=searchapi
+      ns: contactsapp
+      qty: 1
+      rand: true
+      grace_period: 0
+  pauses:
+    after: 1
