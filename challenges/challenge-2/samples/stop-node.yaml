@@ -1,0 +1,83 @@
+---
+version: 1.0.0
+title: Validate pod distribution over k8s nodes
+description: Stops k8s node of VM scale set and validates search api availability
+
+# define azure properties
+configuration:
+  azure_subscription_id:
+    type: "env"
+    key: "AZURE_SUBSCRIPTION_ID"
+  azure_resource_group: 
+    type: "env"
+    key: "AZURE_CLUSTER_RESOURCE_GROUP"
+  azure_vmss_name: 
+    type: "env"
+    key: "AZURE_CLUSTER_RESOURCE_GROUP" 
+  azure_vmss_instanceId:
+    type: "env"
+    key: "AZURE_CLUSTER_VMSS_INSTANCE0"
+  azure_app_endpoint: 
+    type: "env"
+    key: "APP_ENDPOINT"
+
+# define the steady state hypothesis
+steady-state-hypothesis:
+  title: Verifying application is still healthy
+  probes:
+  - type: probe
+    name: search-api-must-still-respond
+    tolerance: 200 # http response code 200 is expected
+    provider:
+      type: http
+      timeout: 2
+      url: http://${azure_app_endpoint}/api/search/contacts?phrase=mustermann
+  - type: probe
+    name: contacts-api-must-still-respond
+    tolerance: 200 # http response code 200 is expected
+    provider:
+      type: http
+      timeout: 2
+      url: http://${azure_app_endpoint}/api/contacts/
+  - type: probe
+    name: visitreports-api-must-still-respond
+    tolerance: 200 # http response code 200 is expected
+    provider:
+      type: http
+      timeout: 2
+      url: http://${azure_app_endpoint}/api/visitreports/reports
+  - type: probe
+    name: frontend-must-still-respond
+    tolerance: 200 # http response code 200 is expected
+    provider:
+      type: http
+      timeout: 2
+      url: http://${azure_app_endpoint}/
+
+# define the experiment: stop k8s node
+method:
+- type: action
+  name: stop-instance
+  provider:
+    type: python
+    module: chaosazure.vmss.actions
+    func: stop_vmss
+    arguments:
+      filter: where resourceGroup=~'${azure_resource_group}' and name=~'${azure_vmss_name}'
+      instance_criteria:
+      - name: ${azure_vmss_instanceId}
+  pauses:
+    after: 15
+
+# define rollback: restart k8s node
+rollbacks:
+- type: action
+  name: restart-instance
+  provider:
+    type: python
+    module: chaosazure.vmss.actions
+    func: restart_vmss
+    arguments:
+      filter: where resourceGroup=~'${azure_resource_group}' and name=~'${azure_vmss_name}'
+      instance_criteria:
+      - name: ${azure_vmss_instanceId}
