@@ -10,13 +10,13 @@ configuration:
     key: "AZURE_SUBSCRIPTION_ID"
   azure_resource_group: 
     type: "env"
-    key: "AZURE_CLUSTER_RESOURCE_GROUP"
+    key: "AZURE_CLUSTER_NODE_RESOURCE_GROUP"
   azure_vmss_name: 
     type: "env"
-    key: "AZURE_CLUSTER_RESOURCE_GROUP" 
+    key: "AZURE_CLUSTER_VMSS_NAME" 
   azure_vmss_instanceId:
     type: "env"
-    key: "AZURE_CLUSTER_VMSS_INSTANCE0"
+    key: "AZURE_CLUSTER_VMSS_INSTANCE"
   azure_app_endpoint: 
     type: "env"
     key: "APP_ENDPOINT"
@@ -67,7 +67,7 @@ method:
       instance_criteria:
       - name: ${azure_vmss_instanceId}
   pauses:
-    after: 15
+    after: 60
 
 # define rollback: restart k8s node
 rollbacks:

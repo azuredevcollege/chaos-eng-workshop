@@ -14,12 +14,12 @@ The Azure extension of chaos-toolkit interacts with the Azure API using a servic
 
 Run the following command to create the service principal:
 ```shell
-az ad sp create-for-rbac --sdk-auth > credentials.json
+az ad sp create-for-rbac --sdk-auth > ~/credentials.json
 ```
 
 Before executing a command with chaos-toolkit, reference the credentials like this:
 ```shell
-export AZURE_AUTH_LOCATION=credentials.json
+export AZURE_AUTH_LOCATION=~/credentials.json
 ```
 
 ### Install Azure extension for chaos-toolkit
@@ -132,10 +132,10 @@ configuration:
     key: "AZURE_SUBSCRIPTION_ID"
   azure_resource_group: 
     type: "env"
-    key: "AZURE_CLUSTER_RESOURCE_GROUP"
+    key: "AZURE_CLUSTER_NODE_RESOURCE_GROUP"
   azure_vmss_name: 
     type: "env"
-    key: "AZURE_CLUSTER_RESOURCE_GROUP" 
+    key: "AZURE_CLUSTER_VMSS_NAME" 
   azure_vmss_instanceId:
     type: "env"
     key: "AZURE_CLUSTER_VMSS_INSTANCE0"
@@ -207,9 +207,9 @@ method:
       instance_criteria:
       - name: ${azure_vmss_instanceId}
   pauses:
-    after: 15
+    after: 30
 ```
-This will stop the by the configuration specified Instance in our cluster virtual machine scale set. Also, we add a pause of 15 seconds before executing the validation of our hypothesis. This is due to some execution time needed to stop the node and Kubernetes to realize that the node is down.
+This will stop the by the configuration specified Instance in our cluster virtual machine scale set. Also, we add a pause of 30 seconds before executing the validation of our hypothesis. This is due to some execution time needed to stop the node and Kubernetes to realize that the node is down.
 
 Every chaos experiment should also always include a rollback. We restart the node at the end, so that the cluster is healthy again after the experiment is finished. For that, we need the `restart_vmss` action from the `chaosazure.vmss.actions`. The filter needs to select the same instance we stopped before. 
 Putting it together:
@@ -236,32 +236,64 @@ You can also find the full experiment definition in `samples/stop-node.yaml`.
 
 #### Run the experiment
 After finishing the experiment definition, let's run it against the cluster.
-To retrieve the necessary resource ids for our experiment, execute the following commands:
+To retrieve the necessary resource ids for our experiment, execute the following commands (fill in your cluster and cluster resource group!):
 ```shell
-AZURE_CLUSTER_RESOURCE_GROUP=$(az aks show -n <CLUSTER_NAME> -g <CLUSTER_RES_GROUP> --query "nodeResourceGroup" -o tsv)
-AZURE_CLUSTER_VMSS_NAME=$(az vmss list -g $AZURE_CLUSTER_RESOURCE_GROUP --query [0].name -o tsv)
-AZURE_CLUSTER_VMSS_INSTANCE0=$(az vmss list-instances -n $AZURE_CLUSTER_VMSS_NAME -g $AZURE_CLUSTER_RESOURCE_GROUP --query [0].name -o tsv)
+# Run this inside the chaos-eng-workshop folder
+export APP_ENDPOINT=$(cd terraform; terraform output -raw nip_hostname)
+export AZURE_SUBSCRIPTION_ID=$(az account show --query "id" -o tsv)
+export AZURE_CLUSTER_NODE_RESOURCE_GROUP=$(az aks show -n mzi-cluster -g mzi-res-group --query "nodeResourceGroup" -o tsv)
+export AZURE_CLUSTER_VMSS_NAME=$(az vmss list -g $AZURE_CLUSTER_NODE_RESOURCE_GROUP --query [0].name -o tsv)
+export AZURE_CLUSTER_VMSS_INSTANCE=$(az vmss list-instances -n $AZURE_CLUSTER_VMSS_NAME -g $AZURE_CLUSTER_NODE_RESOURCE_GROUP --query [0].name -o tsv)
 ```
 
-Note that the variable `AZURE_CLUSTER_VMSS_INSTANCE0` selects the first node in the scale set. When you want to stop a different node, you need to change the number in the query string `--query [0].name`. 
+Note that the variable `AZURE_CLUSTER_VMSS_INSTANCE` currently selects the first node in the scale set. When you want to stop a different node, you need to change the number in the query string `--query [0].name`, that means change the query for the second node to `--query [1].name` and for the third node to `--query [2].name`. 
 
 Do not forget to reference the Azure credentials like follows:
 ```shell
-export AZURE_AUTH_LOCATION=credentials.json
+export AZURE_AUTH_LOCATION=~/credentials.json
 ```
-Now run the chaos experiment with:
+Now run the chaos experiment, inside the Python Virtual Env we created before, with:
 ```shell
-chaos run ./stop-node.yaml
+chaos run --rollback-strategy=always ./stop-node.yaml
 ```
-_TODO: add sample output of experiment here_
+We set `rollback-strategy` to always, so that the rollback also happens when the chaos experiment fails.
 
+Sample output of the experiment looks like this:
+```bash
+$ chaos run --rollback-strategy=always ./stop-node.yaml
+[2021-03-12 15:30:25 INFO] Validating the experiment's syntax
+[2021-03-12 15:30:25 INFO] Experiment looks valid
+[2021-03-12 15:30:25 INFO] Running experiment: Validate pod distribution over k8s nodes
+[2021-03-12 15:30:25 INFO] Steady-state strategy: default
+[2021-03-12 15:30:25 INFO] Rollbacks strategy: always
+[2021-03-12 15:30:25 INFO] Steady state hypothesis: Verifying application is still healthy
+[2021-03-12 15:30:25 INFO] Probe: search-api-must-still-respond
+[2021-03-12 15:30:27 INFO] Probe: contacts-api-must-still-respond
+[2021-03-12 15:30:27 INFO] Probe: visitreports-api-must-still-respond
+[2021-03-12 15:30:27 INFO] Probe: frontend-must-still-respond
+[2021-03-12 15:30:27 INFO] Steady state hypothesis is met!
+[2021-03-12 15:30:27 INFO] Playing your experiment's method now...
+[2021-03-12 15:30:27 INFO] Action: stop-instance
+[2021-03-12 15:30:28 INFO] Pausing after activity for 30s...
+[2021-03-12 15:30:58 INFO] Steady state hypothesis: Verifying application is still healthy
+[2021-03-12 15:30:58 INFO] Probe: search-api-must-still-respond
+[2021-03-12 15:31:00 ERROR]   => failed: failed to connect to http://40-74-41-43.nip.io/api/search/contacts?phrase=mustermann: HTTPConnectionPool(host='40-74-41-43.nip.io', port=80): Max retries exceeded with url: /api/search/contacts?phrase=mustermann (Caused byConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x7f4ef711de10>, 'Connection to 40-74-41-43.nip.io timed out. (connect timeout=2)'))
+[2021-03-12 15:31:00 WARNING] Probe terminated unexpectedly, so its tolerance could not be validated
+[2021-03-12 15:31:00 CRITICAL] Steady state probe 'search-api-must-still-respond' is not in the given tolerance so failing this experiment
+[2021-03-12 15:31:00 WARNING] Rollbacks were explicitly requested to be played
+[2021-03-12 15:31:00 INFO] Let's rollback...
+[2021-03-12 15:31:00 INFO] Rollback: restart-instance
+[2021-03-12 15:31:00 INFO] Action: restart-instance
+[2021-03-12 15:31:01 INFO] Experiment ended with status: deviated
+[2021-03-12 15:31:01 INFO] The steady-state has deviated, a weakness may have been discovered
+```
+In this example, the experiment failed. Let's try to understand the result of this experiment in the next section.
 
 
 #### Experiment results
 What was your result of the experiment? Did the application still work? 
 
-Try re-running the experiment again using a different instance to see if you get a different result.
-The expected behavior would be that the application fails at least once during one run of your experiment. 
+We should see that the experiment failed because one of the services of our SCM application was not responding anymore.
 What is the cause for the application failure?
 
 When the node fails, and all pod instances are running on that node, the application will be unavailable. In such a case, your app is not distributed well over the cluster. 
