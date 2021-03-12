@@ -77,7 +77,7 @@ We will now try out what happens with our application when we stop one of the no
 Let's first do this manually.
 
 First select the resource group of your AKS cluster. You can find it by selecting *Resource groups* in the Azure Portal.
-_TODO: add Images from Azure Portal_
+
 Select the resource groups with the name `MC_<resource-group of your cluster>_<cluster_name>_<location>`. This contains the underlying Azure resources of your AKS cluster. 
 You can also type in the prefix `MC` in the search to see the resource group faster as in the following image:
 ![resource-group-selection](./img/ResourceGroupSelection.png)
@@ -309,7 +309,8 @@ spec:
     ...
 ```
 
-Under `samples/manifests/multi_replica` you can find all deployments with the replica property already modified. Just copy them into the original manifests folder `apps/manifests` to continue.
+Under `samples/manifests/multi_replica` you can find all deployments with the replica property already modified. Just copy them into the original manifests folder `apps/manifests` to continue. You can copy them with this command:
+`cp challenges/challenge-2/samples/manifests/multi_replica/ apps/manifests/ -r -T`
 
 Redeploy the Kubernetes manifests using Terraform.
 Run the following command in the `terraform` folder:
@@ -323,9 +324,28 @@ $ terraform apply \
 
 Now check again with `kubectl get pods -n contactsapp` if there are multiple pods for each deployment. 
 Example output:
-_TODO: add output when having multiple replicas_
-
-You should see multiple pods per deployment. Also, check that the pod instances are really running on different nodes.
+```bash
+$ kubectl get pods -n contactsapp
+NAME                                             READY   STATUS    RESTARTS   AGE
+ca-deploy-56d84bcf47-28kdx                       1/1     Running   0          98s
+ca-deploy-56d84bcf47-58574                       1/1     Running   0          50m
+frontend-deploy-5d85979b7b-5mzd6                 1/1     Running   0          50m
+frontend-deploy-5d85979b7b-tggsw                 1/1     Running   0          99s
+mssql-deployment-5998699cd8-lmwpl                1/1     Running   0          17h
+resources-deploy-7f5f968587-jclvx                1/1     Running   0          17h
+resources-deploy-7f5f968587-qqcwm                1/1     Running   0          99s
+resources-function-deploy-58744cb66-6k6g6        1/1     Running   0          99s
+resources-function-deploy-58744cb66-bszdj        1/1     Running   1          18h
+search-deploy-f7789698-jzr57                     1/1     Running   0          99s
+search-deploy-f7789698-tkhn9                     1/1     Running   0          17h
+search-function-deploy-84b4b6bc84-hpz4q          1/1     Running   0          18h
+search-function-deploy-84b4b6bc84-sqnhc          1/1     Running   0          98s
+textanalytics-function-deploy-6bc56f6b8c-98wsk   1/1     Running   0          98s
+textanalytics-function-deploy-6bc56f6b8c-wt4cj   1/1     Running   0          18h
+visitreports-deploy-5fc8bf9cf5-pxk69             1/1     Running   0          99s
+visitreports-deploy-5fc8bf9cf5-zhj7g             1/1     Running   1          18h
+```
+You should see multiple pods per deployment like in the example output. Also, check that the pod instances are really running on different nodes.
 
 Now try to redo the experiment - it should not fail anymore except when the scheduler by accident put the additional replicas on the same node. The next section shows you what you can do to prevent such cases.
 
@@ -371,7 +391,9 @@ spec:
 ```
 We select the pods using the `labelSelector` matchExpressions by specifiying the key `service` to match to the value `contactsapi`. This selects all *contactsapi* pods. By giving the topologyKey `kubernetes.io/hostname` we ensure that each *contactsapi* replica does not co-locate on a single node. This is due to each node having a different *hostname*. With this method, we could also map pods to multiple node types or pools. 
 
-Now continue adding the these Pod Anti-Affinities to the other deployments. Under `samples/manifests/anti_affinity` you can find all deployments with Anti-Affinity rules added. Just copy them into the original manifests folder `apps/manifests` to continue. 
+Now continue adding the these Pod Anti-Affinities to the other deployments. Under `samples/manifests/anti_affinity` you can find all deployments with Anti-Affinity rules added. Just copy them into the original manifests folder `apps/manifests` to continue. You can copy them with this command:
+`cp challenges/challenge-2/samples/manifests/anti_affinity/ apps/manifests/ -r -T`
+
 Redeploy the manifests with Terraform again using the following command:
 
 ```shell
@@ -383,5 +405,29 @@ $ terraform apply \
 ```
 
 Now observe again how the pods are distributed over the nodes. Can you see that the scheduler never puts both replicas on two nodes?
+Run `kubectl get pods -n contactsapp -o wide` again to see the distribution. 
+Example Output:
+```bash
+$ kubectl get pods -n contactsapp -o wide
+NAME                                             READY   STATUS    RESTARTS   AGE     IP            NODE    NOMINATED NODE   READINESS GATES
+ca-deploy-68d99fb7d-bhhhz                        1/1     Running   0          42s     10.244.2.21   aks-nodepool1-43639662-vmss000002   <none>           <none>
+ca-deploy-68d99fb7d-rj849                        1/1     Running   0          3m53s   10.244.0.13   aks-nodepool1-43639662-vmss000000   <none>           <none>
+frontend-deploy-5686cb698-54zlj                  1/1     Running   0          3m55s   10.244.1.20   aks-nodepool1-43639662-vmss000001   <none>           <none>
+frontend-deploy-5686cb698-s8mp6                  1/1     Running   0          3m55s   10.244.0.14   aks-nodepool1-43639662-vmss000000   <none>           <none>
+mssql-deployment-5998699cd8-lmwpl                1/1     Running   0          17h     10.244.1.16   aks-nodepool1-43639662-vmss000001   <none>           <none>
+resources-deploy-98ff9cdc6-k2dgz                 1/1     Running   0          3m55s   10.244.0.10   aks-nodepool1-43639662-vmss000000   <none>           <none>
+resources-deploy-98ff9cdc6-pr5n8                 1/1     Running   0          3m55s   10.244.2.18   aks-nodepool1-43639662-vmss000002   <none>           <none>
+resources-function-deploy-596b4b9bbf-4glhl       1/1     Running   0          3m55s   10.244.0.11   aks-nodepool1-43639662-vmss000000   <none>           <none>
+resources-function-deploy-596b4b9bbf-x5v2v       1/1     Running   0          3m55s   10.244.1.22   aks-nodepool1-43639662-vmss000001   <none>           <none>
+search-deploy-df655868d-ptdgz                    1/1     Running   0          3m54s   10.244.2.19   aks-nodepool1-43639662-vmss000002   <none>           <none>
+search-deploy-df655868d-s9hfx                    1/1     Running   0          3m55s   10.244.1.19   aks-nodepool1-43639662-vmss000001   <none>           <none>
+search-function-deploy-d56c7f68d-ptx52           1/1     Running   0          3m53s   10.244.1.23   aks-nodepool1-43639662-vmss000001   <none>           <none>
+search-function-deploy-d56c7f68d-whxmx           1/1     Running   0          3m54s   10.244.2.17   aks-nodepool1-43639662-vmss000002   <none>           <none>
+textanalytics-function-deploy-76b76bc594-d7phq   1/1     Running   0          3m55s   10.244.2.16   aks-nodepool1-43639662-vmss000002   <none>           <none>
+textanalytics-function-deploy-76b76bc594-qgk7s   1/1     Running   0          3m54s   10.244.1.21   aks-nodepool1-43639662-vmss000001   <none>           <none>
+visitreports-deploy-5595fb55b5-4s6vr             1/1     Running   0          3m54s   10.244.0.12   aks-nodepool1-43639662-vmss000000   <none>           <none>
+visitreports-deploy-5595fb55b5-r54sq             1/1     Running   0          3m53s   10.244.2.20   aks-nodepool1-43639662-vmss000002   <none>           <none>
+```
+You can see in the output, that for no deployment both replicas are on the same node.
 
 If you have some time left, you can also retry the experiment for a last time to see if it still can fail.
