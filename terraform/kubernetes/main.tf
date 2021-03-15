@@ -63,6 +63,11 @@ resource "helm_release" "ingress" {
   }
 
   set {
+    name = "controller.replicaCount"
+    value = 2
+  }
+
+  set {
     name  = "controller.service.externalTrafficPolicy"
     value = "Local"
   }
@@ -88,7 +93,7 @@ provider "kubectl" {
 
 locals {
   hostname                                       = "${replace(azurerm_public_ip.ingress_ip.ip_address, ".", "-")}.nip.io"
-  sql_connection_string64                        = base64encode("Server=tcp:mssqlsvr,1433;Initial Catalog=scmcontactsdb;Persist Security Info=False;User ID=sa;Password=${var.sqlpwd};MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Connection Timeout=30;")
+  sql_connection_string64                        = base64encode(var.sqldb_connectionstring)
   ai_instrumentation_key                         = var.ai_instrumentation_key
   ai_instrumentation_key64                       = base64encode(var.ai_instrumentation_key)
   thumbnail_listen_connectionstring64            = base64encode(var.thumbnail_listen_connectionstring)
@@ -150,16 +155,6 @@ resource "kubectl_manifest" "scm_configmap" {
     replace(file("abspath(path.module)/../../apps/manifests/configmap.yaml"),
     "#{HOSTNAME}#", local.hostname),
   "#{appinsights}#", local.ai_instrumentation_key)
-}
-
-resource "kubectl_manifest" "mssql_server_deployment" {
-  yaml_body  = replace(file("abspath(path.module)/../../apps/manifests/mssql-server-deployment.yaml"), "#<PWD>#", var.sqlpwd)
-  depends_on = [kubectl_manifest.scm_secrets]
-}
-
-resource "kubectl_manifest" "mssql_server_service" {
-  yaml_body  = file("${abspath(path.module)}/../../apps/manifests/mssql-server-service.yaml")
-  depends_on = [kubectl_manifest.scm_secrets]
 }
 
 resource "kubectl_manifest" "contacts_api_deployment" {
