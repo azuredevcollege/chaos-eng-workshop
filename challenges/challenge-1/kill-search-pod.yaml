@@ -8,7 +8,6 @@ configuration:
   app:
     type: "env"
     key: "APP"
-  azure_app_endpoint: 20-73-198-159.nip.io
 
 # define the steady state hypothesis
 steady-state-hypothesis:
@@ -19,10 +18,10 @@ steady-state-hypothesis:
     tolerance: 200 # http response code 200 is expected
     provider:
       type: http
-      timeout: 2
       url: http://${app}/api/search/contacts?phrase=mustermann
+      timeout: 0.3
 
-# define the experiment
+# define the experiment's action
 method:
 - type: action
   name: terminate-pod

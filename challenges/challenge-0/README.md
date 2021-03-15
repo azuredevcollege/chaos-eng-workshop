@@ -61,6 +61,8 @@ First and foremost, let's create a resource group where we will install the clus
 $ az group create -n <ResourceGroupName> -l westeurope
 ```
 
+Please use for the resource group name the name policy: `<your-initials>-aks-rg`.
+
 Next, create the cluster (this will take approximately 5-10min.):
 
 ```shell
@@ -73,6 +75,8 @@ $ az aks create \
    --generate-ssh-keys \
    --zones 1 2 3
 ```
+
+Please use for the aks cluster group name the name policy: `<your-initials>-aks-cluster`.
 
 The command above will create a Kubernetes cluster in the "West Europe" region and will place our three worker nodes in three different [availability zones](https://docs.microsoft.com/en-us/azure/availability-zones/az-overview).
 
@@ -142,6 +146,16 @@ $ terraform apply \
   -var="akscluster=<ClusterName>"
 ```
 
+Confirm the prompt with `yes` during execution:
+
+```shell
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+```
+
 After the script has finished (appr. after another 10-15 min.), you will see something like this:
 
 ```shell
@@ -157,6 +171,51 @@ nip_hostname = "104-45-73-97.nip.io"
 ```
 
 ## Smoke Test
+
+### Kubernetes Deployments & Pods
+
+Because all deployments of the demo application take place in the `contactsapp` namespace, we first set this namespace as the new default for kubectl.
+
+```shell
+kubectl config set-context --current --namespace=contactsapp
+```
+
+Check all deployments: All deployments must be `ready`
+
+```shell
+$kubectl get deployments
+
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE
+ca-deploy                       1/1     1            1           3h31m
+frontend-deploy                 1/1     1            1           3h36m
+mssql-deployment                1/1     1            1           3h31m
+resources-deploy                1/1     1            1           3h31m
+resources-function-deploy       1/1     1            1           3h31m
+search-deploy                   1/1     1            1           3h31m
+search-function-deploy          1/1     1            1           3h31m
+textanalytics-function-deploy   1/1     1            1           3h31m
+visitreports-deploy             1/1     1            1           3h31m
+```
+
+Check all pods: All pods must be `ready` and `Running`
+
+```shell
+$kubectl get pods
+
+NAME                                             READY   STATUS    RESTARTS   AGE
+ca-deploy-56d84bcf47-nlzp8                       1/1     Running   0          3h33m
+frontend-deploy-5d85979b7b-v2tgk                 1/1     Running   0          3h38m
+mssql-deployment-5998699cd8-cp6zv                1/1     Running   0          3h33m
+resources-deploy-7f5f968587-6j8cc                1/1     Running   0          3h33m
+resources-function-deploy-58744cb66-c8qdf        1/1     Running   0          3h33m
+search-deploy-f7789698-vk6fx                     1/1     Running   0          3h33m
+search-function-deploy-84b4b6bc84-dn7pr          1/1     Running   0          3h33m
+textanalytics-function-deploy-6bc56f6b8c-8pr67   1/1     Running   0          3h33m
+visitreports-deploy-5fc8bf9cf5-q97dr             1/1     Running   0          3h33m
+```
+
+
+### Web-UI
 
 You can now copy & paste the value of the variable `nip_hostname` and open the URL in a browser, in this case <http://104-45-73-97.nip.io>. You should now see the SCM Contacts Management application.
 
