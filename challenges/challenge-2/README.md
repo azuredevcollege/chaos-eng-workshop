@@ -24,7 +24,6 @@ export AZURE_AUTH_LOCATION=~/credentials.json
 
 ### Install Azure extension for chaos-toolkit
 
-_TODO: reference virtual env created in challenge 1 here_
 To install the Azure extension, run the following commands:
 ```shell
 pip install -U chaostoolkit-azure
@@ -190,7 +189,7 @@ steady-state-hypothesis:
 ```
 How did we get these urls?
 You can find these API endpoints, using the web application and checking what requests are made against the backend. For example in Chrome, you can open the Network tab in the developer tools to see the requests. 
-![chrome-devtools-requests](./img/Chrome-Devtools.png)
+![chrome-devtools-requests](./img/Chrome_Devtools.png)
 
 Now that we have our hypothesis finished, we can create the chaos. We want to stop a node in our cluster virtual machine scale set. So, we look at the documentation of the chaostoolkit Azure plugin and search for virtual machine scale sets. There we find that we need to use the module `chaosazure.vmss.actions` with the action `stop_vmsss`. Also, we need to select the right virtual machine scale set using a filter. Putting this all together, we get the following action definition:
 
