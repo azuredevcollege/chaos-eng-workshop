@@ -191,7 +191,7 @@ How did we get these urls?
 You can find these API endpoints, using the web application and checking what requests are made against the backend. For example in Chrome, you can open the Network tab in the developer tools to see the requests. 
 ![chrome-devtools-requests](./img/Chrome_Devtools.png)
 
-Now that we have our hypothesis finished, we can create the chaos. We want to stop a node in our cluster virtual machine scale set. So, we look at the documentation of the chaostoolkit Azure plugin and search for virtual machine scale sets. There we find that we need to use the module `chaosazure.vmss.actions` with the action `stop_vmsss`. Also, we need to select the right virtual machine scale set using a filter. Putting this all together, we get the following action definition:
+Now that we have our hypothesis finished, we can create the chaos. We want to stop a node in our cluster virtual machine scale set. So, we look at the [documentation of the chaostoolkit](https://docs.chaostoolkit.org/drivers/azure/) (if the link is broken try the [archived version](https://web.archive.org/web/20201202114252/https://docs.chaostoolkit.org/drivers/azure/)) Azure plugin and search for virtual machine scale sets. There we find that we need to use the module `chaosazure.vmss.actions` with the action `stop_vmsss`. Also, we need to select the right virtual machine scale set using a filter. Putting this all together, we get the following action definition:
 
 ```yaml
 method:
