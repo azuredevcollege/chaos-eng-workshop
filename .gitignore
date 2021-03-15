@@ -7,3 +7,4 @@
 **/terraform.tfstate
 **/terraform.tfstate.backup
 **/node_modules/**
+.DS_Store
