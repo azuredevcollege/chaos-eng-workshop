@@ -18,16 +18,20 @@ How could we test a failure of one specific availability zone? We can re-use the
 First, where do you see to which zone your node belongs? Go to the Azure Portal and to the *Virtual Machine Scale Set* of the cluster you provisioned. There under location, you can see the zone.
 This property will help us identify to which availability zone a node belongs. 
 
-Second, remember the `instance_criteria` of the *stop_vmss* action? We need to populate this mapping with all instances that belong to a specific availability zone. You need to create a shell command to retrieve this list and create a list of instances to store it into a environment variable.
+Second, do you remember the `instance_criteria` of the *stop_vmss* action? We always only selected one instance but you can actually select multiple instances using a criteria that fits multiple instances. We need to somehow change the instance criteria to select all instances of an availability zone. Check out the Azure CLI command `az vmss list-instances` to see which property you could use as `instance_criteria`. It has something to do with availability zones... 
 
-Finally, modify the experiment so that all instances of the `instance_criteria` environment are matched and stopped. To do this, modify stop-node.yaml and action definition there. 
+Finally, modify the experiment so that you take the availability zone to kill the nodes in as input and change the `instance_criteria` to use the property you previously found with the input availability zone. Modify both the action and rollback definition! 
 
-If you are finished, run the experiment as in challenge #2.
+The [documentation of the chaostoolkit Azure plugin](https://docs.chaostoolkit.org/drivers/azure/) (if the link is broken try the [archived version](https://web.archive.org/web/20201202114252/https://docs.chaostoolkit.org/drivers/azure/)) can help with defining the experiment and expressing the instance criteria. If you can understand Python code, it also helps to directly check [the code behind the actions](https://github.com/chaostoolkit-incubator/chaostoolkit-azure/blob/master/chaosazure/vmss/actions.py).
+
+If you are finished, run the experiment in the same way as in challenge #2.
 
 What is the result of the experiment? 
 The expectation is that the experiment fails, because all the nodes of your cluster are stopped.
+
 What do we need to do to solve the issue and make the experiment succeed?
 
+If you are stuck, we added a sample chaos experiment in `samples/stop-node-az.yaml`.
 ## Spreading the application over multiple availability zones
 
 ### Deploy a second node pool with nodes in multiple availability zones
