@@ -72,8 +72,7 @@ $ az aks create \
    --node-count 3 \
    --enable-managed-identity \
    --node-vm-size standard_b2s \
-   --generate-ssh-keys \
-   --zones 1 2 3
+   --generate-ssh-keys
 ```
 
 Please use for the aks cluster group name the name policy: `<your-initials>-aks-cluster`.
