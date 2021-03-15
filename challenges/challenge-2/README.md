@@ -1,5 +1,7 @@
 # Challenge 2 - Spread your application over the whole cluster
 
+## Introduction
+
 In this section, we will get in touch with the Azure Extension of Chaos Toolkit. With this extension, we can create chaos on the Kubernetes nodes by directly interacting with the Azure resources which power the cluster. 
 
 We will answer the following questions during this challenge:
