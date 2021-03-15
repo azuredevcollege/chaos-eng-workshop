@@ -242,7 +242,7 @@ To retrieve the necessary resource ids for our experiment, execute the following
 # Run this inside the chaos-eng-workshop folder
 export APP_ENDPOINT=$(cd terraform; terraform output -raw nip_hostname)
 export AZURE_SUBSCRIPTION_ID=$(az account show --query "id" -o tsv)
-export AZURE_CLUSTER_NODE_RESOURCE_GROUP=$(az aks show -n mzi-cluster -g mzi-res-group --query "nodeResourceGroup" -o tsv)
+export AZURE_CLUSTER_NODE_RESOURCE_GROUP=$(az aks show -n <CLUSTER_NAME> -g <CLUSTER_RESOURCE_GROUP> --query "nodeResourceGroup" -o tsv)
 export AZURE_CLUSTER_VMSS_NAME=$(az vmss list -g $AZURE_CLUSTER_NODE_RESOURCE_GROUP --query [0].name -o tsv)
 export AZURE_CLUSTER_VMSS_INSTANCE=$(az vmss list-instances -n $AZURE_CLUSTER_VMSS_NAME -g $AZURE_CLUSTER_NODE_RESOURCE_GROUP --query [0].name -o tsv)
 ```
