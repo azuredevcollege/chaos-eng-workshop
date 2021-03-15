@@ -13,15 +13,15 @@ Our first challenge is the Kubernetes “hello world” of Chaos Testing. What h
 * Run the search directly in the cloud shell
 
 ```shell
-export APP=<NIP_HOSTNAME>
+$ export APP=<NIP_HOSTNAME>
 
-curl http://$APP/api/search/contacts?phrase=mustermann
+$ curl http://$APP/api/search/contacts?phrase=mustermann
 ```
 
 If you want to format the JSON response, you can use the JSON processor (`jp`) to do so:
 
 ```shell
-curl http://$APP/api/search/contacts?phrase=mustermann | jq '.'
+$ curl http://$APP/api/search/contacts?phrase=mustermann | jq '.'
 ```
 
 ## Step #2: Game Day
@@ -40,7 +40,7 @@ Now we start with our first experiment. Admittedly, it is a bit naive. But the f
 Let's do the experiment. 
 
 ```shell
-kubectl delete pods --force --grace-period=0 -l service=searchapi && \
+$ kubectl delete pods --force --grace-period=0 -l service=searchapi && \
     sleep 1 && \
     curl http://$APP/api/search/contacts?phrase=mustermann
 
