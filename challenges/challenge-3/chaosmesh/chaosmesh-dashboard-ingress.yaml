@@ -10,7 +10,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - Dashboard'
 spec:
   rules:
-    - host: 20-50-46-222.nip.io
+    - host: #{HOSTNAME}#
       http:
         paths:
           - path: /dashboard

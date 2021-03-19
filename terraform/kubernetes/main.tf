@@ -250,6 +250,31 @@ resource "kubectl_manifest" "swagger_ingress" {
   depends_on = [kubectl_manifest.scm_secrets]
 }
 
+resource "kubernetes_namespace" "chaostesting" {
+  metadata {
+    name = "chaos-testing"
+  }
+}
+
+resource "kubernetes_secret" "basic_auth_secret" {
+  metadata {
+    name = "basic-auth"
+    namespace = "chaos-testing"
+  }
+
+  data = {
+    username = "choas"
+    password = "testing"
+  }
+
+  type = "kubernetes.io/basic-auth"
+}
+
+resource "kubectl_manifest" "chaosmesh_ingress" {
+  yaml_body  = replace(file("abspath(path.module)/../../challenges/challenge-3/chaosmesh/chaosmesh-dashboard-ingress.yaml"), "#{HOSTNAME}#", local.hostname)
+  depends_on = [kubectl_manifest.scm_secrets]
+}
+
 output "nip_hostname" {
   value = local.hostname
 }
