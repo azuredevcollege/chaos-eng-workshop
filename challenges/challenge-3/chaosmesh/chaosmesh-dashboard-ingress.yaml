@@ -33,3 +33,7 @@ spec:
             backend:
               serviceName: chaos-dashboard
               servicePort: 2333
+          - path: /api/archives(/|$)(.*)
+            backend:
+              serviceName: chaos-dashboard
+              servicePort: 2333
