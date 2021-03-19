@@ -28,9 +28,10 @@ export AZURE_AUTH_LOCATION=~/credentials.json
 
 To install the Azure extension, run the following commands:
 ```shell
-pip install -U chaostoolkit-azure
+# Pin to old version due to bug in latest version
+pip install chaostoolkit-azure==0.8.3
 
-# Due to chaostoolkit-azure no pinning old library versions that depend on, we need to install them manually:
+# Because chaostoolkit-azure is not pinning its dependencies, we need to install them manually and pin to an old version due to a bug:
 pip install azure-mgmt-resourcegraph==2.0.0
 pip install azure.mgmt.compute==7.0.0
 ```

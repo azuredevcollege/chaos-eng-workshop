@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: slowdown-to-searchservice
+  namespace: contactsapp
+spec:
+  action: delay
+  mode: all
+  value: ''
+  selector:
+    namespaces:
+      - contactsapp
+    labelSelectors:
+      service: searchapi
+  delay:
+    latency: 5s
+    correlation: '0'
+    jitter: 1s
+  direction: to
+  externalTargets:
+    - <your-prefix>searchdev.search.windows.net
