@@ -45,6 +45,18 @@ spec:
             limits:
               memory: '256Mi'
               cpu: '500m'
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 3000
+            failureThreshold: 1
+            initialDelaySeconds: 2
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 3000
+            failureThreshold: 1
+            initialDelaySeconds: 2
           image: ghcr.io/azuredevcollege/adc-visitreports-api:2.0
           env:
             - name: COSMOSDB
@@ -67,6 +79,8 @@ spec:
                 secretKeyRef:
                   name: scmsecrets
                   key: CONTACTSLISTENENTITYCONNSTR
+            - name: READINESSDELAYSECONDS
+              value: "1"
             - name: APPINSIGHTS_KEY
               valueFrom:
                 secretKeyRef:
