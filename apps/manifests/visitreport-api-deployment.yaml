@@ -41,12 +41,14 @@ spec:
               port: 3000
             failureThreshold: 1
             initialDelaySeconds: 2
+            periodSeconds: 5
           startupProbe:
             httpGet:
               path: /health/ready
               port: 3000
             failureThreshold: 1
             initialDelaySeconds: 2
+            periodSeconds: 5
           image: ghcr.io/azuredevcollege/adc-visitreports-api:2.0
           env:
             - name: COSMOSDB

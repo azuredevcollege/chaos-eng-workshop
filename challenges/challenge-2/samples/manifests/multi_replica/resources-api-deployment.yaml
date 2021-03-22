@@ -41,12 +41,14 @@ spec:
               port: 5000
             failureThreshold: 1
             initialDelaySeconds: 2
+            periodSeconds: 5
           startupProbe:
             httpGet:
               path: /health/ready
               port: 5000
             failureThreshold: 1
             initialDelaySeconds: 2
+            periodSeconds: 5
           image: ghcr.io/azuredevcollege/adc-resources-api:2.0
           env:
             - name: ImageStoreOptions__StorageAccountConnectionString

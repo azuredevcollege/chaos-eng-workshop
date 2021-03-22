@@ -41,12 +41,14 @@ spec:
               port: 5000
             failureThreshold: 1
             initialDelaySeconds: 2
+            periodSeconds: 5
           startupProbe:
             httpGet:
               path: /health/ready
               port: 5000
             failureThreshold: 1
             initialDelaySeconds: 2
+            periodSeconds: 5
           image: ghcr.io/azuredevcollege/adc-search-api:3.0
           env:
             - name: ContactSearchOptions__ServiceName
