@@ -245,10 +245,10 @@ export APP_ENDPOINT=$(cd terraform; terraform output -raw nip_hostname)
 export AZURE_SUBSCRIPTION_ID=$(az account show --query "id" -o tsv)
 export AZURE_CLUSTER_NODE_RESOURCE_GROUP=$(az aks show -n <CLUSTER_NAME> -g <CLUSTER_RESOURCE_GROUP> --query "nodeResourceGroup" -o tsv)
 export AZURE_CLUSTER_VMSS_NAME=$(az vmss list -g $AZURE_CLUSTER_NODE_RESOURCE_GROUP --query [0].name -o tsv)
-export AZURE_CLUSTER_VMSS_INSTANCE=$(az vmss list-instances -n $AZURE_CLUSTER_VMSS_NAME -g $AZURE_CLUSTER_NODE_RESOURCE_GROUP --query [0].name -o tsv)
+export AZURE_CLUSTER_VMSS_INSTANCE0=$(az vmss list-instances -n $AZURE_CLUSTER_VMSS_NAME -g $AZURE_CLUSTER_NODE_RESOURCE_GROUP --query [0].name -o tsv)
 ```
 
-Note that the variable `AZURE_CLUSTER_VMSS_INSTANCE` currently selects the first node in the scale set. When you want to stop a different node, you need to change the number in the query string `--query [0].name`, that means change the query for the second node to `--query [1].name` and for the third node to `--query [2].name`. 
+Note that the variable `AZURE_CLUSTER_VMSS_INSTANCE0` currently selects the first node in the scale set. When you want to stop a different node, you need to change the number in the query string `--query [0].name`, that means change the query for the second node to `--query [1].name` and for the third node to `--query [2].name`. 
 
 Do not forget to reference the Azure credentials like follows:
 ```shell

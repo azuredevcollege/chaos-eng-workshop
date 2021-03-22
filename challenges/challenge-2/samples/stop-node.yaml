@@ -16,7 +16,7 @@ configuration:
     key: "AZURE_CLUSTER_VMSS_NAME" 
   azure_vmss_instanceId:
     type: "env"
-    key: "AZURE_CLUSTER_VMSS_INSTANCE"
+    key: "AZURE_CLUSTER_VMSS_INSTANCE0"
   azure_app_endpoint: 
     type: "env"
     key: "APP_ENDPOINT"
