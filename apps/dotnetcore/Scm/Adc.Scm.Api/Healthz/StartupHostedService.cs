@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Adc.Scm.Repository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Adc.Scm.Repository.EntityFrameworkCore;
 
 public class StartupHostedService : IHostedService, IDisposable
 {
@@ -37,9 +38,9 @@ public class StartupHostedService : IHostedService, IDisposable
             {
                 try
                 {
-                    // execute a default command request to initialize EF Core correctly
-                    var repo = scope.ServiceProvider.GetService<IContactRepository>();
-                    await repo.Get(Guid.NewGuid()); 
+                    // ensure that DB schema is created
+                    var ctx = scope.ServiceProvider.GetService<ContactDbContext>();
+                    await ctx.Database.EnsureCreatedAsync();
                 } 
                 catch (Exception )
                 {
