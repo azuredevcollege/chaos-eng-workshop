@@ -35,6 +35,20 @@ spec:
             limits:
               memory: '256Mi'
               cpu: '500m'
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 5000
+            failureThreshold: 1
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 5000
+            failureThreshold: 1
+            initialDelaySeconds: 2
+            periodSeconds: 5
           image: ghcr.io/azuredevcollege/adc-search-api:3.0
           env:
             - name: ContactSearchOptions__ServiceName
@@ -49,6 +63,8 @@ spec:
                   key: SEARCHPRIMARYKEY
             - name: ContactSearchOptions__IndexName
               value: scmcontacts
+            - name: ReadinessDelaySeconds
+              value: "1"
             - name: APPINSIGHTS_INSTRUMENTATIONKEY
               valueFrom:
                 secretKeyRef:

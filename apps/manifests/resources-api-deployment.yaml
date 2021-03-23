@@ -35,6 +35,20 @@ spec:
             limits:
               memory: '256Mi'
               cpu: '500m'
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 5000
+            failureThreshold: 1
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 5000
+            failureThreshold: 1
+            initialDelaySeconds: 2
+            periodSeconds: 5
           image: ghcr.io/azuredevcollege/adc-resources-api:2.0
           env:
             - name: ImageStoreOptions__StorageAccountConnectionString
@@ -51,6 +65,8 @@ spec:
                 secretKeyRef:
                   name: scmsecrets
                   key: THUMBNAILSENDCONNSTR
+            - name: ReadinessDelaySeconds
+              value: "1"
             - name: ServiceBusQueueOptions__ImageContainer
               value: rawimages
             - name: ServiceBusQueueOptions__ThumbnailContainer

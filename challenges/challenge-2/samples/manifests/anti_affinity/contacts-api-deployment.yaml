@@ -45,6 +45,20 @@ spec:
             limits:
               memory: '256Mi'
               cpu: '500m'
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 5000
+            failureThreshold: 1
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 5000
+            failureThreshold: 1
+            initialDelaySeconds: 2
+            periodSeconds: 5
           image: ghcr.io/azuredevcollege/adc-contacts-api:4.0
           env:
             - name: ConnectionStrings__DefaultConnectionString
@@ -52,6 +66,8 @@ spec:
                 secretKeyRef:
                   name: scmsecrets
                   key: SQLDBCONNECTIONSTRING
+            - name: ReadinessDelaySeconds
+              value: "1"
             - name: APPINSIGHTS_INSTRUMENTATIONKEY
               valueFrom:
                 secretKeyRef:
