@@ -19,7 +19,7 @@ namespace Adc.Scm.Repository.EntityFrameworkCore
 
         public async Task<Contact> Add(Guid userId, Contact contact)
         {
-            await _context.Database.EnsureCreatedAsync();
+            //await _context.Database.EnsureCreatedAsync();
 
             contact.Id = Guid.NewGuid();
             contact.UserId = userId;
@@ -30,7 +30,7 @@ namespace Adc.Scm.Repository.EntityFrameworkCore
 
         public async Task<Contact> Delete(Guid userId, Guid id)
         {
-            await _context.Database.EnsureCreatedAsync();
+            //await _context.Database.EnsureCreatedAsync();
 
             var contact = await _context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
             if (null == contact)
@@ -43,14 +43,14 @@ namespace Adc.Scm.Repository.EntityFrameworkCore
 
         public async Task<Contact> Get(Guid userId, Guid id)
         {
-            await _context.Database.EnsureCreatedAsync();
+            //await _context.Database.EnsureCreatedAsync();
 
             return await _context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
         }
 
         public async Task<List<Contact>> Get(Guid userId)
         {
-            await _context.Database.EnsureCreatedAsync();
+            //await _context.Database.EnsureCreatedAsync();
 
             return await _context.Contacts.Where(c => c.UserId == userId).ToListAsync();
         }
@@ -58,7 +58,7 @@ namespace Adc.Scm.Repository.EntityFrameworkCore
         public async Task<Contact> Save(Guid userId, Contact contact)
         {
             contact.UserId = userId;
-            await _context.Database.EnsureCreatedAsync();
+            //await _context.Database.EnsureCreatedAsync();
 
             _context.Contacts.Update(contact);
             await _context.SaveChangesAsync();
