@@ -26,7 +26,7 @@ jobs:
           context: ./apps/dotnetcore/Scm
           file: ./apps/dotnetcore/Scm/Adc.Scm.Api/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/adc-contacts-api:4.3
+          tags: ghcr.io/${{ github.repository_owner }}/adc-contacts-api:4.4
 
       - name: Build and Push SCM Frontend UI
         uses: docker/build-push-action@v2
