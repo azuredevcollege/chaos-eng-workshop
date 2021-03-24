@@ -40,6 +40,7 @@ namespace Adc.Scm.Api
             // Initialize ApplicationInsights
             services.AddSingleton<ITelemetryInitializer, ApiTelemetryInitializer>();
             services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetryProcessor<SqlKeepAliveDependencyFilter>();
 
             services.AddHostedService<StartupHostedService>();
             services.AddSingleton<StartupHostedServiceHealthCheck>();
