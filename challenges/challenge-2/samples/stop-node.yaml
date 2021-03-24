@@ -37,7 +37,7 @@ steady-state-hypothesis:
     tolerance: 200 # http response code 200 is expected
     provider:
       type: http
-      timeout: 2
+      timeout: 4
       url: http://${azure_app_endpoint}/api/contacts/
   - type: probe
     name: visitreports-api-must-still-respond
@@ -67,7 +67,7 @@ method:
       instance_criteria:
       - name: ${azure_vmss_instanceId}
   pauses:
-    after: 60
+    after: 120
 
 # define rollback: restart k8s node
 rollbacks:

@@ -72,6 +72,7 @@ $ az aks create \
    --node-count 3 \
    --enable-managed-identity \
    --node-vm-size standard_b2s \
+   --network-plugin azure \
    --generate-ssh-keys
 ```
 
