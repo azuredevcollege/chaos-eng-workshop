@@ -6,7 +6,7 @@ Chaos engineering is a discipline that is becoming increasingly important, espec
 
 In this repository, we will guide you on how to setup and use different tools from the chaos engineering universe and "stress test" a real-world Kubernetes-based application with network failures, delays, worker node outages etc. 
 
-It is split into several challenges that you need to solve, beginning with the setup of your Kubernetes cluster and the deployment of the application.
+It is split into several challenges that you need to solve, beginning with the setup of your Kubernetes cluster and the deployment of the application. Here's a brief overview of what the application consists of:
 
 ![architecture](./challenges/challenge-0/img/aks-architecture.png)
 
