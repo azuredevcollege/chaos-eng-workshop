@@ -59,7 +59,7 @@ spec:
             failureThreshold: 1
             initialDelaySeconds: 2
             periodSeconds: 5
-          image: ghcr.io/azuredevcollege/adc-contacts-api:4.0
+          image: ghcr.io/azuredevcollege/adc-contacts-api:4.6
           env:
             - name: ConnectionStrings__DefaultConnectionString
               valueFrom:
