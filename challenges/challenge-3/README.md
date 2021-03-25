@@ -127,7 +127,7 @@ The name of the Azure Search service should be `<your-prefix>cdadev`. If you sel
 ![azure-cosmosdb-overview](./images/Azure_Cosmos_DB.png)
 
 This url is what we will use as *External Target* in our experiment.
-Now, we can define the chaos experiment. We will do this directly as yaml.
+Now, we can define the chaos experiment. We will do this directly as yaml: `network-delay-visitreport.yaml`
 
 ```yaml
 apiVersion: chaos-mesh.org/v1alpha1
