@@ -200,7 +200,7 @@ The test should run successfully. The test runs for 15 seconds and runs the "Vis
 
 Let's take a look what our application does. Open the Visit Reports page. In the Browser Dev Tools you can see the slower loading time of the service.
 
-![scm-visit-report](./images/VistReports_Network_Delay_Devtools.png)
+![scm-visit-report](./images/VisitReports_Network_Delay_Devtools.png)
 
 The final task of this challenge is now to figure out by how much the delay needs to be increased so that the list loading fails and displays an error message in the "Visit Reports" dialog? To do this, increase the `latency` parameter in the `network-delay-visitreport.yaml` file step by step and apply each change to the experiment: `kubectl apply -f network-delay-visitreport.yaml`
 
