@@ -13,15 +13,15 @@ Our first challenge is the Kubernetes “hello world” of Chaos Testing. What h
 * Run the search directly in the cloud shell
 
 ```shell
-$ export APP=<NIP_HOSTNAME>
+$ export APP_ENDPOINT=$(cd terraform; terraform output -raw nip_hostname)
 
-$ curl http://$APP/api/search/contacts?phrase=mustermann
+$ curl http://$APP_ENDPOINT/api/search/contacts?phrase=mustermann
 ```
 
 If you want to format the JSON response, you can use the JSON processor (`jp`) to do so:
 
 ```shell
-$ curl http://$APP/api/search/contacts?phrase=mustermann | jq '.'
+$ curl http://$APP_ENDPOINT/api/search/contacts?phrase=mustermann | jq '.'
 ```
 
 ## Step #2: Game Day
@@ -42,7 +42,7 @@ Let's do the experiment.
 ```shell
 $ kubectl delete pods --force --grace-period=0 -l service=searchapi && \
     sleep 1 && \
-    curl http://$APP/api/search/contacts?phrase=mustermann
+    curl http://$APP_ENDPOINT/api/search/contacts?phrase=mustermann
 
 <html>
 <head><title>503 Service Temporarily Unavailable</title></head>
@@ -75,9 +75,9 @@ description: Kills search service and validates search api availability
 
 # define azure properties
 configuration:
-  app:
+  azure_app_endpoint:
     type: "env"
-    key: "APP"
+    key: "APP_ENDPOINT"
 ```
 
 The second part is the experiment's `steady-state`.
@@ -92,7 +92,7 @@ steady-state-hypothesis:
     tolerance: 200 # http response code 200 is expected
     provider:
       type: http
-      url: http://${app}/api/search/contacts?phrase=mustermann
+      url: http://${azure_app_endpoint}/api/search/contacts?phrase=mustermann
       timeout: 0.2
 ```
 
