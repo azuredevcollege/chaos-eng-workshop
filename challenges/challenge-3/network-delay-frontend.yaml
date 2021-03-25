@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-frontend
+  namespace: contactsapp
+  labels: null
+  annotations: null
+spec:
+  action: delay
+  mode: one
+  value: ''
+  selector:
+    namespaces:
+      - contactsapp
+    labelSelectors:
+      service: frontend
+  delay:
+    latency: 10s
+    correlation: '0'
+    jitter: 0s
+  direction: to

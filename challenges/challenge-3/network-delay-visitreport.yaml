@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-visitreport
+  namespace: contactsapp
+  labels: null
+  annotations:
+    experiment.chaos-mesh.org/pause: 'false'
+spec:
+  action: delay
+  mode: all
+  value: ''
+  selector:
+    namespaces:
+      - contactsapp
+    labelSelectors:
+      service: visitreportsapi
+  delay:
+    latency: 10s
+    correlation: '0'
+    jitter: 0ms
+  direction: to
+  externalTargets:
+    - jfcdadev.documents.azure.com
+    - jfcdadev-westeurope.documents.azure.com

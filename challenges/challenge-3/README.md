@@ -116,11 +116,15 @@ To stop the experiment, you can either click on *Archive* in the dashboard on th
 
 Many of our applications have external dependencies. No matter how good we can build everything in our cluster, there still can be delay or failure to an external service. We should still build our applications resilient enough with timeouts and retries to survive such issues.
 
-Let's built a chaos experiment to test the SCM application against delays in their external dependencies. We pick the connection between the SCM Search API service and the Azure Search Service. Here, we want to introduce a network delay on that connection similar to the experiment in the previous section.
+Let's built a chaos experiment to test the SCM application against delays in their external dependencies. We pick the connection between the SCM Visit Report API service and the Azure Cosmos DB. Here, we want to introduce a network delay on that connection similar to the experiment in the previous section.
 
-We start with finding out the external URL of the Azure Search Service. To do this, we go to the Azure Portal and look for the deployed Azure Search Service. You can use the search bar, search for the keyword `search` and select your Azure Search Service instance. 
-The name of the Azure Search service should be `<your-prefix>searchdev`. If you selected the service, you can find the URL in the overview. 
-![azure-search-overview](./images/Azure_Search_Service.png)
+We start with creating some test data. Open the "Visit Reports" page of our demo application and add two new visit reports with the green "+" button in the bottom left corner.
+
+![scm-visit-reports](.images/SCM_Visit_Reports.png)
+
+We start with finding out the external URL of the Azure Cosmos DB. To do this, we go to the Azure Portal and look for the deployed Azure Cosmos DB. You can use the search bar, search for the keyword `cosmos` and select your Azure Cosmos DB instance. 
+The name of the Azure Search service should be `<your-prefix>cdadev`. If you selected the service, you can find the URL in the overview. 
+![azure-cosmosdb-overview](./images/Azure_Cosmos_DB.png)
 
 This url is what we will use as *External Target* in our experiment.
 Now, we can define the chaos experiment. We will do this directly as yaml.
@@ -129,8 +133,11 @@ Now, we can define the chaos experiment. We will do this directly as yaml.
 apiVersion: chaos-mesh.org/v1alpha1
 kind: NetworkChaos
 metadata:
-  name: slowdown-to-searchservice
+  name: network-delay-visitreport
   namespace: contactsapp
+  labels: null
+  annotations:
+    experiment.chaos-mesh.org/pause: 'false'
 spec:
   action: delay
   mode: all
@@ -139,23 +146,66 @@ spec:
     namespaces:
       - contactsapp
     labelSelectors:
-      service: searchapi
+      service: visitreportsapi
   delay:
     latency: 5s
     correlation: '0'
-    jitter: 1s
+    jitter: 0ms
   direction: to
   externalTargets:
-    - <your-prefix>searchdev.search.windows.net
+    - <your-prefix>cdadev.documents.azure.com
+    - <your-prefix>cdadev-westeurope.documents.azure.com
 ```
 
-We define the delay with 5s latency and 1s jitter for more variation. The selector now points to the `contactsapi` service. Important to change mode from `one` to `all` so that the chaos experiment picks all `contactsapi` pods as we are running them with two replicas. 
-Finally, we define the external target which is the SQL server. 
-With this definition, only the traffic to the SQL server is delayed.
+We define the delay with 5s latency. The selector now points to the `visitreportsapi` service. Important to change mode from `one` to `all` so that the chaos experiment picks all `visitreportsapi` pods as we are running them with two replicas. 
+Finally, we define the external target which is the Cosmos DB. 
+With this definition, only the traffic to the Cosmos DB is delayed.
 
-We can now deploy the experiment using `kubectl apply -f samples/slowdown-to-sql.yaml`. After deployment, the experiment directly starts.
+We can now deploy the experiment using `kubectl apply -f network-delay-visitreport.yaml`. After deployment, the experiment directly starts.
 
-Let's take a look what our application does. Do a search and see how it fails after loading for some time like in this image:
-![scm-search-fail](./images/SCM_Search_Failure.png)
+For the visit reports service we have prepared a small `k6` performance test. Change to the "k6" directory and run the test.
 
-What can we do about this? At least, the frontend already shows the error and does not fully fail. But, we could increase the timeout so that it takes longer, or decrease it to fail quicker. It depends on the use-case how to make it more resilient.
+```bash
+$ ./k6 run k6/reports.js
+```
+
+Result:
+
+```
+running (16.0s), 0/1 VUs, 3 complete and 0 interrupted iterations
+default ✓ [======================================] 1 VUs  15s
+
+     ✓ response code was 200
+
+     checks.........................: 100.00% ✓ 3   ✗ 0
+     data_received..................: 2.4 kB  152 B/s
+     data_sent......................: 333 B   20 B/s
+     http_req_blocked...............: avg=15.39ms  min=12µs  med=13µs  max=46.16ms p(90)=36.93ms p(95)=41.54ms
+     http_req_connecting............: avg=14.91ms  min=0s    med=0s    max=44.75ms p(90)=35.8ms  p(95)=40.28ms
+   ✓ http_req_duration..............: avg=5.06s    min=5.05s med=5.06s max=5.06s   p(90)=5.06s   p(95)=5.06s
+       { expected_response:true }...: avg=5.06s    min=5.05s med=5.06s max=5.06s   p(90)=5.06s   p(95)=5.06s
+     http_req_failed................: 0.00%   ✓ 0   ✗ 3
+     http_req_receiving.............: avg=236µs    min=156µs med=201µs max=351µs   p(90)=321µs   p(95)=335.99µs
+     http_req_sending...............: avg=163.99µs min=57µs  med=88µs  max=347µs   p(90)=295.2µs p(95)=321.09µs
+     http_req_tls_handshaking.......: avg=0s       min=0s    med=0s    max=0s      p(90)=0s      p(95)=0s
+     http_req_waiting...............: avg=5.06s    min=5.05s med=5.05s max=5.06s   p(90)=5.06s   p(95)=5.06s
+     http_reqs......................: 3       0.187608/s
+     iteration_duration.............: avg=5.32s    min=5.31s med=5.32s max=5.35s   p(90)=5.35s   p(95)=5.35s
+     iterations.....................: 3       0.187608/s
+     vus............................: 1       min=1 max=1
+     vus_max........................: 1       min=1 max=1
+```
+
+The test should run successfully. The test runs for 15 seconds and runs the "Visit Report" service again and again. The test validates whether all responses have the status code 200 and average request duration (`sending + waiting + receiving`) is below 5.5 seconds. 
+
+Let's take a look what our application does. Open the Visit Reports page. In the Browser Dev Tools you can see the slower loading time of the service.
+
+![scm-visit-report](VistReports_Network_Delay_Devtools.png)
+
+The final task of this challenge is now to figure out by how much the delay needs to be increased so that the list loading fails and displays an error message in the "Visit Reports" dialog? To do this, increase the `latency` parameter in the `network-delay-visitreport.yaml` file step by step and apply each change to the experiment: `kubectl apply -f network-delay-visitreport.yaml`
+
+![scm-visitrepors-fail](SCM_VisitReport_Failure.png)
+
+From how many seconds the error message pop up?
+
+What can we do about this? At least, the frontend already shows the error and does not fully fail. But, we could increase the timeout so that it takes longer, or decrease it to fail quicker. It depends on the use-case how to make it more resilient. How would you decide on this use case?
