@@ -1,36 +1,35 @@
-# chaos-eng-workshop
+# Welcome, friends!
 
-## Create ResourceGroup
+Chaos engineering is a discipline that is becoming increasingly important, especially in the area of software development of distributed applications. Platforms like Kubernetes encourage you to develop microservice-based applications and (often times) create small independent services that communicate with each other through messaging systems. This is hoped to provide many benefits, such as faster feature releases, fewer source code dependencies, and better assigned responsibilities - among others. However, it also introduces problems which often only occur in production and under certain load. Chaos engineering helps developers to find these vulnerabilities early and to eliminate them before they affect your end users.
 
-```Shell
-$ az group create -n <ResourceGroupName> -l westeurope
-```
+## Chaos Engineering Workshop
 
-## Create Cluster
+In this repository, we will guide you on how to setup and use different tools from the chaos engineering universe and "stress test" a real-world Kubernetes-based application with network failures, delays, worker node outages etc. 
 
-```Shell
-$ az aks create -g <ResourceGroupName> -n <ClusterName> --node-count 3 --enable-managed-identity --node-vm-size standard_b2s --generate-ssh-keys --zones 1 2 3
-```
+It is split into several challenges that you need to solve, beginning with the setup of your Kubernetes cluster and the deployment of the application. Here's a brief overview of what the application consists of:
 
-## Get-Credentials
+![architecture](./challenges/challenge-0/img/aks-architecture.png)
 
-```Shell
-$ az aks get-credentials -g <ResourceGroupName> -n <ClusterName>
-```
+It is as simple as following the challenges from 0 to 4.
 
-## Deploy the application
+Happy hacking! 😄
 
-Switch to directory _terraform_ and run following commands:
+- [Challenge 0 - Setup the environment](challenges/challenge-0/README.md)
+- [Challenge 1 - Chaos Engineering "hello world"](challenges/challenge-1/README.md)
+- [Challenge 2 - Spread your application over the whole cluster](challenges/challenge-2/README.md)
+- [Challenge 3 - Stability also in case of network troubles](challenges/challenge-3/README.md)
+- [Challenge 4 (Bonus) - Increasing reliability using availability zones](challenges/challenge-4/README.md)
 
-```Shell
-$ terraform init 
-$ terraform apply -var="prefix=<yourprefix>" -var="location=westeurope" -var="aks_resource_group_name=<ResourceGroupName>" -var="akscluster=<ClusterName>"
-# Answer with 'yes' when asked, that the changes will be applied.
-```
+## Contributing
 
-## Readiness / Liveness Probes
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit <https://cla.microsoft.com.>
 
-Each service comes with a `/health/live` and `/health/ready` endpoint. The liveness endpoint returns `200` as soon as the corresponding service is up and running. The readiness endpoint returns a `503` by default for 15 sec, after that timespan `200`. That delay value can be adjusted by an environment variable:
+When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
+a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.
 
-- Contacts / Resources / Search API: `ReadinessDelaySeconds` (e.g. `5`)
-- VisitReports API: `READINESSDELAYSECONDS`
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

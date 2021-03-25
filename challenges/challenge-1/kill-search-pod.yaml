@@ -19,7 +19,7 @@ steady-state-hypothesis:
     provider:
       type: http
       url: http://${app}/api/search/contacts?phrase=mustermann
-      timeout: 0.3
+      timeout: 0.9
 
 # define the experiment's action
 method:

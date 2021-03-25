@@ -40,6 +40,7 @@ namespace Adc.Scm.Api
             // Initialize ApplicationInsights
             services.AddSingleton<ITelemetryInitializer, ApiTelemetryInitializer>();
             services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetryProcessor<SqlKeepAliveDependencyFilter>();
 
             services.AddHostedService<StartupHostedService>();
             services.AddSingleton<StartupHostedServiceHealthCheck>();
@@ -88,22 +89,12 @@ namespace Adc.Scm.Api
 
                         var sqlConnectionBuilder = new SqlConnectionStringBuilder(connStr);
 
-                        if (null != connectionTimeout)
-                        {
-                            sqlConnectionBuilder.ConnectTimeout = connectionTimeout.Value;
-                        }
-
-                        if (null != connectionRetryCount) 
-                        {
-                            sqlConnectionBuilder.ConnectRetryCount = connectionRetryCount.Value;
-                        }
-
                         options.UseSqlServer(sqlConnectionBuilder.ConnectionString, sqlSrvOpts => 
                         {
-                            if (null != commandTimeout)
-                            {
-                                sqlSrvOpts.CommandTimeout(commandTimeout.Value);
-                            }
+                            sqlSrvOpts.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null);
                         });
                     });
                     services.AddScoped<IContactRepository, ContactRepository>();
