@@ -204,7 +204,7 @@ Let's take a look what our application does. Open the Visit Reports page. In the
 
 The final task of this challenge is now to figure out by how much the delay needs to be increased so that the list loading fails and displays an error message in the "Visit Reports" dialog? To do this, increase the `latency` parameter in the `network-delay-visitreport.yaml` file step by step and apply each change to the experiment: `kubectl apply -f network-delay-visitreport.yaml`
 
-![scm-visitrepors-fail](./images/SCM_VisitReport_Failure.png)
+![scm-visitrepors-fail](./images/SCM_Visit_Reports_Failure.png)
 
 From how many seconds the error message pop up?
 
