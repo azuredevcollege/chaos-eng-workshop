@@ -166,7 +166,7 @@ We can now deploy the experiment using `kubectl apply -f network-delay-visitrepo
 For the visit reports service we have prepared a small `k6` performance test. Change to the "k6" directory and run the test.
 
 ```bash
-$ ./k6 run k6/reports.js
+$ ./k6 run ./reports.js
 ```
 
 Result:
