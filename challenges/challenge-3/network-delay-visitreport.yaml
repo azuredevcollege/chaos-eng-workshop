@@ -16,7 +16,7 @@ spec:
     labelSelectors:
       service: visitreportsapi
   delay:
-    latency: 10s
+    latency: 5s
     correlation: '0'
     jitter: 0ms
   direction: to
