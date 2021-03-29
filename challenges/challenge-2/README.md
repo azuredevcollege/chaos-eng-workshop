@@ -114,6 +114,8 @@ Do this by going to the web application using the previous variable `nip_hostnam
 
 You can also view if enough pods are still alive using `kubectl get pods -n contactsapp` in the namespace of the application. If your application is down - how long does it take to recover? 
 
+Now, restart the node which you manually deleted using the Azure Portal.  
+
 Take these learnings into account, when creating a chaos experiment in the next part of the challenge.
 ### Create a chaos experiment using chaostoolkit
 Now, let's define a chaos experiment to test our application against node failures. We will stop a specific node and validate that the application still works. Exactly what we did manually in the previous section.
