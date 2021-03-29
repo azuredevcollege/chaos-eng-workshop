@@ -7,7 +7,7 @@ description: Kills search service and validates search api availability
 configuration:
   azure_app_endpoint:
     type: "env"
-    key: "APP"
+    key: "APP_ENDPOINT"
 
 # define the steady state hypothesis
 steady-state-hypothesis:
