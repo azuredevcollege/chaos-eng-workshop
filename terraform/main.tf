@@ -113,4 +113,5 @@ output "nip_hostname" {
 
 output "ai_ik" {
     value = module.common.ai_instrumentation_key
+    sensitive = true
 }
