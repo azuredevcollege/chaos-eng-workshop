@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "~> 2.6.0"
+  version = "~> 2.60.0"
   features{
 
   }
@@ -113,4 +113,5 @@ output "nip_hostname" {
 
 output "ai_ik" {
     value = module.common.ai_instrumentation_key
+    sensitive = true
 }

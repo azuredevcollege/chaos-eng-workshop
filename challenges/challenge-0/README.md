@@ -120,7 +120,7 @@ Now switch to the `terraform` directory and initialize `terraform`:
 
 ```shell
 $ cd chaos-eng-workshop/terraform
-$ terraform init
+$ terraform init -upgrade
 
 Initializing modules...
 - common in common

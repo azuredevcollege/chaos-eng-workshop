@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "~> 2.6.0"
+  version = "~> 2.60.0"
   features {
   }
 }
@@ -102,7 +102,7 @@ resource "azurerm_cognitive_account" "textanalytics" {
   resource_group_name = var.resource_group_name
   kind                = "TextAnalytics"
 
-  sku_name = "S0"
+  sku_name = "F0"
 
   tags = {
     environment = var.env
