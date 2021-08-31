@@ -86,7 +86,7 @@ resource "azurerm_search_service" "search" {
   name                = "${var.prefix}search${var.env}"
   resource_group_name = var.resource_group_name
   location            = var.location
-  sku                 = "free"
+  sku                 = "basic"
 
   tags = {
     environment = var.env
