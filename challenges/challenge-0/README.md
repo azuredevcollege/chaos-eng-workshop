@@ -73,7 +73,8 @@ $ az aks create \
    --enable-managed-identity \
    --node-vm-size standard_b2s \
    --network-plugin azure \
-   --generate-ssh-keys
+   --generate-ssh-keys \
+   --kubernetes-version 1.22.6
 ```
 
 Please use for the aks cluster group name the name policy: `<your-initials>-aks-cluster`.
