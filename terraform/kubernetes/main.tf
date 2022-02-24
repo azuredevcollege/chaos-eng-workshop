@@ -256,11 +256,6 @@ resource "kubernetes_namespace" "chaostesting" {
   }
 }
 
-resource "kubectl_manifest" "chaosmesh_ingress" {
-  yaml_body  = replace(file("abspath(path.module)/../../challenges/challenge-3/chaosmesh/chaosmesh-dashboard-ingress.yaml"), "#{HOSTNAME}#", local.hostname)
-  depends_on = [kubectl_manifest.scm_secrets]
-}
-
 output "nip_hostname" {
   value = local.hostname
 }
