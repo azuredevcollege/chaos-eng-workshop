@@ -1,9 +1,21 @@
-provider "azurerm" {
-  version = "~> 2.60.0"
-  features {
-
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.2"
+    }
   }
 }
+
+provider "azurerm" {
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy    = true
+      recover_soft_deleted_key_vaults = true
+    }
+  }
+}
+
 
 resource "azurerm_resource_group" "common" {
   name     = "${var.prefix}-common-rg"
@@ -17,9 +29,8 @@ resource "azurerm_resource_group" "common" {
 # Base Resource Groups
 
 resource "azurerm_resource_group" "data" {
-  name              = "${var.prefix}-data-rg"
-  location          = var.location
-  failover_location = var.failover_location
+  name     = "${var.prefix}-data-rg"
+  location = var.location
   tags = {
     environment = var.env
     source      = "chaos-eng-workshop"
@@ -57,6 +68,7 @@ module "common" {
 module "data" {
   source              = "./data"
   location            = azurerm_resource_group.data.location
+  failover_location   = var.failover_location
   resource_group_name = azurerm_resource_group.data.name
   env                 = var.env
   prefix              = var.prefix

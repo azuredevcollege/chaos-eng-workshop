@@ -1,9 +1,3 @@
-provider "azurerm" {
-  version = "~> 2.60.0"
-  features {
-  }
-}
-
 # CosmosDB
 
 resource "azurerm_cosmosdb_account" "cda" {
@@ -52,7 +46,7 @@ resource "azurerm_cosmosdb_sql_container" "cda_database_container" {
 
 # Azure SQL DB
 
-resource "azurerm_sql_server" "sqlsrv" {
+resource "azurerm_mssql_server" "sqlsrv" {
   name                         = "${var.prefix}sqlsrv${var.env}"
   resource_group_name          = var.resource_group_name
   location                     = var.location
@@ -66,25 +60,21 @@ resource "azurerm_sql_server" "sqlsrv" {
   }
 }
 
-resource "azurerm_sql_database" "sqldb" {
-  name                             = "${var.prefix}sqldb${var.env}"
-  resource_group_name              = var.resource_group_name
-  location                         = var.location
-  server_name                      = azurerm_sql_server.sqlsrv.name
-  requested_service_objective_name = "S0"
-  edition                          = "Standard"
+resource "azurerm_mssql_database" "sqldb" {
+  name      = "${var.prefix}sqldb${var.env}"
+  server_id = azurerm_mssql_server.sqlsrv.id
+  sku_name  = "S0"
   tags = {
     environment = var.env
     source      = "chaos-eng-workshop"
   }
 }
 
-resource "azurerm_sql_firewall_rule" "sqldb" {
-  name                = "FirewallRule1"
-  resource_group_name = var.resource_group_name
-  server_name         = azurerm_sql_server.sqlsrv.name
-  start_ip_address    = "0.0.0.0"
-  end_ip_address      = "0.0.0.0"
+resource "azurerm_mssql_firewall_rule" "sqldb" {
+  name             = "FirewallRule1"
+  server_id        = azurerm_mssql_server.sqlsrv.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
 }
 
 # SEARCH
@@ -123,17 +113,17 @@ output "cosmos_endpoint" {
 }
 
 output "cosmos_primary_master_key" {
-  value       = azurerm_cosmosdb_account.cda.primary_master_key
+  value       = azurerm_cosmosdb_account.cda.primary_key
   description = "Cosmo DB Primary Master key"
 }
 
 output "cosmos_secondary_master_key" {
-  value       = azurerm_cosmosdb_account.cda.secondary_master_key
+  value       = azurerm_cosmosdb_account.cda.secondary_key
   description = "Cosmo DB Primary Master key"
 }
 
 output "sqldb_connectionstring" {
-  value       = "Server=tcp:${azurerm_sql_server.sqlsrv.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_sql_database.sqldb.name};Persist Security Info=False;User ID=${azurerm_sql_server.sqlsrv.administrator_login};Password=${azurerm_sql_server.sqlsrv.administrator_login_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  value       = "Server=tcp:${azurerm_mssql_server.sqlsrv.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.sqldb.name};Persist Security Info=False;User ID=${azurerm_mssql_server.sqlsrv.administrator_login};Password=${azurerm_mssql_server.sqlsrv.administrator_login_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   description = "SQL DB Connection String"
 }
 

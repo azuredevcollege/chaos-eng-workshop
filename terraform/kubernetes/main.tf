@@ -1,6 +1,6 @@
 data "azurerm_kubernetes_service_versions" "current" {
   location       = var.location
-  version_prefix = "1.17"
+  version_prefix = "1.22"
 }
 
 data "azurerm_kubernetes_cluster" "k8s" {

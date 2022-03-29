@@ -1,16 +1,10 @@
-provider "azurerm" {
-  version = "~> 2.60.0"
-  features {
-  }
-}
-
 resource "azurerm_storage_account" "resources" {
-  name                     = "${var.prefix}resources${var.env}"
-  resource_group_name      = var.resource_group_name
-  location                 = var.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  allow_blob_public_access = true
+  name                            = "${var.prefix}resources${var.env}"
+  resource_group_name             = var.resource_group_name
+  location                        = var.location
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  allow_nested_items_to_be_public = true
 
   tags = {
     environment = var.env
