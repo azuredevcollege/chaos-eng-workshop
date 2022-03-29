@@ -1,0 +1,18 @@
+{
+    "mode": "one",
+    "selector": {
+        "namespaces": [
+            "contactsapp"
+        ],
+        "labelSelectors": {
+            "application": "scmcontacts",
+            "service": "contactsapi"
+        }
+    },
+    "stressors": {
+        "cpu": {
+            "workers": 4,
+            "load": 50
+        }
+    }
+}

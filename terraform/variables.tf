@@ -3,14 +3,19 @@ variable "location" {
   default = "westeurope"
 }
 
+variable "failover_location" {
+  type    = string
+  default = "northeurope"
+}
+
 variable "aks_resource_group_name" {
     type = string
-    default = "AKS-RG"
+    default = "rg-chaoseng"
 }
 
 variable "akscluster" {
     type = string
-    default = "aks"
+    default = "chaoseng-cluster"
 }
 
 variable "prefix" {

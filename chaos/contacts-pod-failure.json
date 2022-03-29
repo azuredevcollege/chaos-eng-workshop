@@ -1,0 +1,14 @@
+{
+    "action": "pod-failure",
+    "mode": "one",
+    "duration": "120s",
+    "selector": {
+        "namespaces": [
+            "contactsapp"
+        ],
+        "labelSelectors": {
+            "application": "scmcontacts",
+            "service": "contactsapi"
+        }
+    }
+}

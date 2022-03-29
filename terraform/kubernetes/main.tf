@@ -162,6 +162,11 @@ resource "kubectl_manifest" "contacts_api_deployment" {
   depends_on = [kubectl_manifest.scm_secrets]
 }
 
+resource "kubectl_manifest" "contacts_api_hpa" {
+  yaml_body  = file("${abspath(path.module)}/../../apps/manifests/contacts-api-hpa.yaml")
+  depends_on = [kubectl_manifest.contacts_api_deployment]
+}
+
 resource "kubectl_manifest" "contacts_api_service" {
   yaml_body  = file("${abspath(path.module)}/../../apps/manifests/contacts-api-service.yaml")
   depends_on = [kubectl_manifest.scm_secrets]

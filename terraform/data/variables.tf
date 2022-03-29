@@ -2,6 +2,10 @@ variable "location" {
   type = string
 }
 
+variable "failover_location" {
+  type = string
+}
+
 variable "prefix" {
   type = string
 }

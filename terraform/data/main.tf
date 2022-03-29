@@ -17,9 +17,16 @@ resource "azurerm_cosmosdb_account" "cda" {
     consistency_level = "Session"
   }
 
+  enable_multiple_write_locations = true
+
   geo_location {
     location          = var.location
     failover_priority = 0
+  }
+
+  geo_location {
+    location          = var.failover_location
+    failover_priority = 1
   }
 
   tags = {
@@ -32,7 +39,7 @@ resource "azurerm_cosmosdb_sql_database" "cda_database" {
   name                = var.cosmosdbname
   resource_group_name = var.resource_group_name
   account_name        = azurerm_cosmosdb_account.cda.name
-  throughput          = 400
+  throughput          = 4000
 }
 
 resource "azurerm_cosmosdb_sql_container" "cda_database_container" {
