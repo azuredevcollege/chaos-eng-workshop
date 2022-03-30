@@ -112,6 +112,16 @@ output "cosmos_endpoint" {
   description = "Cosmo DB Endpoint"
 }
 
+output "cosmosDbName" {
+  value       = azurerm_cosmosdb_account.cda.name
+  description = "Cosmo DB Account Name"
+}
+
+output "cosmosDbId" {
+  value       = azurerm_cosmosdb_account.cda.id
+  description = "Cosmo DB Account ID"
+}
+
 output "cosmos_primary_master_key" {
   value       = azurerm_cosmosdb_account.cda.primary_key
   description = "Cosmo DB Primary Master key"

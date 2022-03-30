@@ -17,6 +17,15 @@ provider "azurerm" {
 }
 
 
+resource "azurerm_resource_group" "chaos" {
+  name     = "${var.prefix}-chaos-rg"
+  location = var.location
+  tags = {
+    environment = var.env
+    source      = "chaos-eng-workshop"
+  }
+}
+
 resource "azurerm_resource_group" "k8s" {
   name     = "${var.prefix}-k8s-rg"
   location = var.location
@@ -129,6 +138,19 @@ module "kubernetes" {
   textanalytics_key                            = module.data.textanalytics_key
   resources_primary_connection_string          = module.storage.resources_primary_connection_string
   funcs_primary_connection_string              = module.storage.funcs_primary_connection_string
+}
+
+module "chaos" {
+  source                     = "./chaos"
+  location                   = azurerm_resource_group.k8s.location
+  resource_group_name_chaos  = azurerm_resource_group.chaos.name
+  resource_group_name_k8s    = azurerm_resource_group.k8s.name
+  resource_group_name_cosmos = azurerm_resource_group.data.name
+  clusterName                = module.kubernetes.clusterName
+  clusterId                  = module.kubernetes.clusterId
+  cosmosDbName               = module.data.cosmosDbName
+  cosmosDbId                 = module.data.cosmosDbId
+  cosmosFailoverRegion       = var.failover_location
 }
 
 output "nip_hostname" {

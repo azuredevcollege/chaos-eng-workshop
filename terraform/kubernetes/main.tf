@@ -294,6 +294,13 @@ resource "kubectl_manifest" "swagger_ingress" {
   depends_on = [kubectl_manifest.scm_secrets]
 }
 
+output "clusterName" {
+  value = azurerm_kubernetes_cluster.k8s.name
+}
+
+output "clusterId" {
+  value = azurerm_kubernetes_cluster.k8s.id
+}
 
 output "nip_hostname" {
   value = local.hostname
