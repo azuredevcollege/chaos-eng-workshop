@@ -1,24 +1,29 @@
 variable "location" {
+  type = string
+}
+
+variable "prefix" {
+  type = string
+}
+
+variable "env" {
   type    = string
-  default = "westeurope"
+}
+
+variable "k8sversion" {
+  type = string
 }
 
 variable "resource_group_name" {
-    type = string
-    default = "AKS-DEV-RG"
-}
-
-variable "akscluster" {
-    type = string
-    default = "aksdev"
+  type = string
 }
 
 variable "sqlpwd" {
-    type = string
+  type = string
 }
 
 variable "ai_instrumentation_key" {
-    type = string
+  type = string
 }
 
 variable "thumbnail_listen_connectionstring" {

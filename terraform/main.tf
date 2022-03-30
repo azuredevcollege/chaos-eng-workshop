@@ -17,6 +17,15 @@ provider "azurerm" {
 }
 
 
+resource "azurerm_resource_group" "k8s" {
+  name     = "${var.prefix}-k8s-rg"
+  location = var.location
+  tags = {
+    environment = var.env
+    source      = "chaos-eng-workshop"
+  }
+}
+
 resource "azurerm_resource_group" "common" {
   name     = "${var.prefix}-common-rg"
   location = var.location
@@ -96,9 +105,11 @@ module "messaging" {
 
 module "kubernetes" {
   source                                       = "./kubernetes"
-  location                                     = var.location
-  resource_group_name                          = var.aks_resource_group_name
-  akscluster                                   = var.akscluster
+  location                                     = azurerm_resource_group.k8s.location
+  resource_group_name                          = azurerm_resource_group.k8s.name
+  env                                          = var.env
+  prefix                                       = var.prefix
+  k8sversion                                   = var.k8sversion
   sqlpwd                                       = var.sqldbpassword
   ai_instrumentation_key                       = module.common.ai_instrumentation_key
   thumbnail_listen_connectionstring            = module.messaging.thumbnail_listen_connectionstring

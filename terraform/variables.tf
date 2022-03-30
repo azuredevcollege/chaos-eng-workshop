@@ -8,14 +8,9 @@ variable "failover_location" {
   default = "northeurope"
 }
 
-variable "aks_resource_group_name" {
-    type = string
-    default = "rg-chaoseng"
-}
-
-variable "akscluster" {
-    type = string
-    default = "chaoseng-cluster"
+variable "k8sversion" {
+  type    = string
+  default = "1.22.6"
 }
 
 variable "prefix" {

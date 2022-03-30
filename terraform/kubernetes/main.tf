@@ -1,21 +1,35 @@
-data "azurerm_kubernetes_service_versions" "current" {
-  location       = var.location
-  version_prefix = "1.22"
-}
-
-data "azurerm_kubernetes_cluster" "k8s" {
-  name                = var.akscluster
+resource "azurerm_kubernetes_cluster" "k8s" {
+  name                = "${var.prefix}k8s${var.env}"
+  location            = var.location
   resource_group_name = var.resource_group_name
+  dns_prefix          = "${var.prefix}k8s${var.env}"
+
+  default_node_pool {
+    name       = "default"
+    node_count = 3
+    vm_size    = "Standard_B2s"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  kubernetes_version = var.k8sversion
+
+  tags = {
+    environment = var.env
+    source      = "chaos-eng-workshop"
+  }
 }
 
 provider "kubernetes" {
-  host = data.azurerm_kubernetes_cluster.k8s.fqdn
+  host = azurerm_kubernetes_cluster.k8s.fqdn
   client_certificate = base64decode(
-    data.azurerm_kubernetes_cluster.k8s.kube_config[0].client_certificate,
+    azurerm_kubernetes_cluster.k8s.kube_config[0].client_certificate,
   )
-  client_key = base64decode(data.azurerm_kubernetes_cluster.k8s.kube_config[0].client_key)
+  client_key = base64decode(azurerm_kubernetes_cluster.k8s.kube_config[0].client_key)
   cluster_ca_certificate = base64decode(
-    data.azurerm_kubernetes_cluster.k8s.kube_config[0].cluster_ca_certificate,
+    azurerm_kubernetes_cluster.k8s.kube_config[0].cluster_ca_certificate,
   )
 }
 
@@ -34,18 +48,18 @@ resource "kubernetes_namespace" "ingress" {
 resource "azurerm_public_ip" "ingress_ip" {
   name                = "contactsapp-ingressip"
   location            = var.location
-  resource_group_name = data.azurerm_kubernetes_cluster.k8s.node_resource_group
+  resource_group_name = azurerm_kubernetes_cluster.k8s.node_resource_group
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
 provider "helm" {
   kubernetes {
-    host               = data.azurerm_kubernetes_cluster.k8s.kube_config[0].host
-    client_certificate = base64decode(data.azurerm_kubernetes_cluster.k8s.kube_config[0].client_certificate)
-    client_key         = base64decode(data.azurerm_kubernetes_cluster.k8s.kube_config[0].client_key)
+    host               = azurerm_kubernetes_cluster.k8s.kube_config[0].host
+    client_certificate = base64decode(azurerm_kubernetes_cluster.k8s.kube_config[0].client_certificate)
+    client_key         = base64decode(azurerm_kubernetes_cluster.k8s.kube_config[0].client_key)
     cluster_ca_certificate = base64decode(
-      data.azurerm_kubernetes_cluster.k8s.kube_config[0].cluster_ca_certificate,
+      azurerm_kubernetes_cluster.k8s.kube_config[0].cluster_ca_certificate,
     )
   }
 }
@@ -63,7 +77,7 @@ resource "helm_release" "ingress" {
   }
 
   set {
-    name = "controller.replicaCount"
+    name  = "controller.replicaCount"
     value = 2
   }
 
@@ -79,16 +93,41 @@ resource "helm_release" "ingress" {
 
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group"
-    value = data.azurerm_kubernetes_cluster.k8s.node_resource_group
+    value = azurerm_kubernetes_cluster.k8s.node_resource_group
+  }
+}
+
+
+resource "kubernetes_namespace" "chaostesting" {
+  metadata {
+    name = "chaos-testing"
+  }
+}
+
+resource "helm_release" "chaos_mesh" {
+  name       = "chaos-mesh"
+  chart      = "chaos-mesh"
+  version    = "2.1.3"
+  repository = "https://charts.chaos-mesh.org"
+  namespace  = kubernetes_namespace.chaostesting.metadata[0].name
+
+  set {
+    name  = "chaosDaemon.runtime"
+    value = "containerd"
+  }
+
+  set {
+    name  = "chaosDaemon.socketPath"
+    value = "/run/containerd/containerd.sock"
   }
 }
 
 provider "kubectl" {
   load_config_file       = false
-  host                   = data.azurerm_kubernetes_cluster.k8s.kube_config[0].host
-  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.k8s.kube_config[0].client_certificate)
-  client_key             = base64decode(data.azurerm_kubernetes_cluster.k8s.kube_config[0].client_key)
-  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.k8s.kube_config[0].cluster_ca_certificate)
+  host                   = azurerm_kubernetes_cluster.k8s.kube_config[0].host
+  client_certificate     = base64decode(azurerm_kubernetes_cluster.k8s.kube_config[0].client_certificate)
+  client_key             = base64decode(azurerm_kubernetes_cluster.k8s.kube_config[0].client_key)
+  cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.k8s.kube_config[0].cluster_ca_certificate)
 }
 
 locals {
@@ -255,11 +294,6 @@ resource "kubectl_manifest" "swagger_ingress" {
   depends_on = [kubectl_manifest.scm_secrets]
 }
 
-resource "kubernetes_namespace" "chaostesting" {
-  metadata {
-    name = "chaos-testing"
-  }
-}
 
 output "nip_hostname" {
   value = local.hostname
